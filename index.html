@@ -178,7 +178,7 @@
 
         .volume-stack {
             position: absolute;
-            right: 8px;
+            right: -1px;
             top: 132px;
             display: grid;
             gap: 9px;
@@ -545,6 +545,7 @@
             margin: auto 0;
             min-height: 58px;
             display: flex;
+            flex-wrap: wrap;
             align-items: center;
             justify-content: center;
             text-align: center;
@@ -554,6 +555,63 @@
             letter-spacing: 1px;
             color: #f2f7ff;
             text-shadow: 0 0 12px rgba(124, 207, 255, 0.42);
+        }
+
+        .dial-caret {
+            width: 2px;
+            height: 30px;
+            margin: 0 1px;
+            border-radius: 2px;
+            background: #7ce3ff;
+            box-shadow: 0 0 10px rgba(124, 227, 255, 0.8);
+        }
+
+        .settings-list {
+            display: grid;
+            gap: 7px;
+            margin-top: 12px;
+        }
+
+        .settings-row {
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 8px;
+            display: grid;
+            grid-template-columns: 28px 1fr;
+            gap: 8px;
+            align-items: center;
+            color: #eff6fb;
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.02));
+            text-align: left;
+            font-size: 12px;
+        }
+
+        .settings-row.selected {
+            border-color: rgba(124, 227, 255, 0.72);
+            background: linear-gradient(180deg, rgba(53, 86, 104, 0.72), rgba(15, 22, 28, 0.92));
+        }
+
+        .settings-row svg {
+            width: 22px;
+            height: 22px;
+            color: #fff;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        .settings-row strong {
+            display: block;
+            font-size: 12px;
+        }
+
+        .settings-row span {
+            display: block;
+            margin-top: 2px;
+            color: #b9c7d0;
+            font-size: 10px;
         }
 
         .softbar {
@@ -790,6 +848,18 @@
             font-size: 18px;
         }
 
+        .gallery-import {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .gallery-import input {
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            cursor: pointer;
+        }
+
         .gallery-detail {
             position: absolute;
             inset: 0;
@@ -871,6 +941,22 @@
             display: block;
             margin-bottom: 3px;
             font-size: 14px;
+        }
+
+        .gallery-detail-tools {
+            display: grid;
+            padding: 9px 12px;
+            background: rgba(0, 0, 0, 0.74);
+        }
+
+        .gallery-detail-tools button {
+            border: 0;
+            border-radius: 999px;
+            padding: 8px 10px;
+            color: #fff;
+            background: rgba(8, 120, 255, 0.88);
+            font-size: 12px;
+            font-weight: 800;
         }
 
         .calc-ops {
@@ -1144,6 +1230,68 @@
                 linear-gradient(rgba(255, 255, 255, 0.06) 1px, transparent 1px),
                 #111;
             background-size: 32px 32px;
+        }
+
+        .power-overlay,
+        .boot-overlay,
+        .power-off-screen {
+            position: absolute;
+            inset: 0;
+            z-index: 30;
+            display: none;
+            place-items: center;
+            padding: 18px;
+            color: #fff;
+            background: radial-gradient(circle at 50% 20%, rgba(110, 14, 24, 0.65), transparent 44%), #030303;
+            text-align: center;
+        }
+
+        .power-overlay.active,
+        .boot-overlay.active,
+        .power-off-screen.active {
+            display: grid;
+        }
+
+        .power-overlay.active {
+            z-index: 34;
+        }
+
+        .boot-overlay.active {
+            z-index: 35;
+        }
+
+        .power-card {
+            width: 100%;
+            display: grid;
+            gap: 9px;
+        }
+
+        .power-card button {
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            border-radius: 9px;
+            padding: 10px;
+            color: #fff;
+            background: rgba(255, 255, 255, 0.12);
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .power-card .danger {
+            color: #ff6961;
+        }
+
+        .boot-logo {
+            font-size: 32px;
+            font-weight: 900;
+            letter-spacing: 7px;
+            text-shadow: 0 0 18px rgba(255, 255, 255, 0.55);
+        }
+
+        .boot-sub {
+            margin-top: 10px;
+            color: #cfd7dc;
+            font-size: 11px;
+            letter-spacing: 1px;
         }
 
         .feedback {
@@ -1540,6 +1688,10 @@
                         <div class="gallery-bottombar">
                             <button class="gallery-icon-btn" data-testid="share-photo" type="button" onclick="shareSelectedPhoto()" aria-label="share selected photo">&#8679;</button>
                             <button class="gallery-icon-btn" type="button" onclick="setSelectedAsWallpaper()" aria-label="set selected as wallpaper">&#9728;</button>
+                            <label class="gallery-icon-btn gallery-import" aria-label="add photo">
+                                +
+                                <input data-testid="gallery-import-input" type="file" accept="image/*" multiple onchange="importGalleryImages(event)">
+                            </label>
                             <button class="gallery-icon-btn" data-testid="download-photo" type="button" onclick="downloadSelectedPhoto()" aria-label="save selected photo">&#8681;</button>
                         </div>
                         <div id="gallery-detail" class="gallery-detail" data-testid="gallery-detail">
@@ -1550,6 +1702,9 @@
                             </div>
                             <button id="gallery-stage" class="gallery-stage" type="button" onclick="toggleGalleryInfo()" aria-label="photo info"></button>
                             <div id="gallery-detail-info-panel" class="gallery-info-panel" data-testid="gallery-detail-info-panel"></div>
+                            <div class="gallery-detail-tools">
+                                <button data-testid="gallery-detail-wallpaper" type="button" onclick="setSelectedAsWallpaper()">Set wallpaper</button>
+                            </div>
                         </div>
                     </section>
 
@@ -1618,14 +1773,15 @@
 
                     <section id="settings-view" class="screen-view app-view">
                         <div class="screen-title" data-testid="screen-title">Settings</div>
-                        <div class="list">
-                            <button class="list-row selected" data-testid="button-settings" type="button">Hardware buttons: left soft single=Menu, right soft single=Back/custom app, D-pad single=app shortcuts, double=alternate app, hold=power or custom action</button>
-                            <div class="settings-section">Buttons & shortcuts<br>Left top: Menu. Right top: Back one step. Right top hold: Recent Apps. Left/right/up/down: assign app, double press, and hold action.</div>
-                            <div class="settings-section">Sound & ringtone<br>Ringtone: Nokia Tune. Volume <span data-testid="settings-volume">5</span>. Profile: General / Silent / Outdoor.</div>
-                            <div class="settings-section">Display<br>Wallpaper from Gallery, brightness 80%, theme, status indicators.</div>
-                            <div class="settings-section">Date & time<br>Auto clock, date format, alarm defaults.</div>
-                            <div class="settings-section">Network & power<br>5G label, signal bars, Wi-Fi bars, battery bars, power button behavior.</div>
-                            <div class="settings-section">Media<br>Music folder chooser placeholder, gallery wallpaper, now playing on home.</div>
+                        <div class="settings-list" data-testid="settings-list">
+                            <button class="settings-row selected" data-testid="button-settings" type="button" data-setting-row="buttons"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7h10M7 12h10M7 17h10"></path></svg><span><strong>ปุ่ม</strong><span>DPAD, ปุ่มลัด, ปุ่มกลับ</span></span></button>
+                            <button class="settings-row" data-testid="settings-row-sound" type="button" data-setting-row="sound"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 10v4h4l5 4V6l-5 4H4zM17 9c1 1 1 5 0 6"></path></svg><span><strong>เสียง</strong><span>ระดับ <span data-testid="settings-volume">5</span>, ปิดเสียง</span></span></button>
+                            <button class="settings-row" type="button" data-setting-row="display"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="12" rx="2"></rect><path d="M9 21h6M12 17v4"></path></svg><span><strong>หน้าจอ</strong><span>วอลเปเปอร์, ความสว่าง</span></span></button>
+                            <button class="settings-row" type="button" data-setting-row="time"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"></circle><path d="M12 8v5l3 2"></path></svg><span><strong>เวลา</strong><span>วันที่, นาฬิกา, ปลุก</span></span></button>
+                            <button class="settings-row" type="button" data-setting-row="camera"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h4l2-2h4l2 2h4v10H4z"></path><circle cx="12" cy="13" r="3"></circle></svg><span><strong>กล้อง</strong><span>ฟิลเตอร์, วิดีโอ, สลับกล้อง</span></span></button>
+                            <button class="settings-row" type="button" data-setting-row="network"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 17h2M9 14h2M13 11h2M17 8h2"></path></svg><span><strong>เครือข่าย</strong><span>5G, Wi-Fi, สัญญาณ</span></span></button>
+                            <button class="settings-row" type="button" data-setting-row="media"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18V5l10-2v13"></path><circle cx="7" cy="18" r="2"></circle><circle cx="17" cy="16" r="2"></circle></svg><span><strong>สื่อ</strong><span>เพลง, Gallery, เครื่องเล่น</span></span></button>
+                            <button class="settings-row" type="button" data-setting-row="system"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v8M8 6a7 7 0 1 0 8 0"></path></svg><span><strong>ระบบ</strong><span>Power, reboot, battery</span></span></button>
                         </div>
                     </section>
 
@@ -1676,6 +1832,19 @@
                         <input id="touch-entry-input" class="touch-entry-input" data-testid="touch-entry-input" aria-label="manual input" autocomplete="off" autocapitalize="none" spellcheck="false">
                         <button class="touch-entry-close" data-testid="touch-entry-close" type="button" onclick="closeTouchEntry()" aria-label="close manual input">&times;</button>
                     </div>
+                    <div id="power-menu" class="power-overlay" data-testid="power-menu">
+                        <div class="power-card">
+                            <button class="danger" data-testid="power-off" type="button" onclick="powerOff()">Power off</button>
+                            <button data-testid="reboot-phone" type="button" onclick="rebootPhone()">Reboot</button>
+                        </div>
+                    </div>
+                    <div id="boot-screen" class="boot-overlay" data-testid="boot-screen">
+                        <div>
+                            <div class="boot-logo" data-testid="boot-logo">NOKIA</div>
+                            <div class="boot-sub">XpressMusic</div>
+                        </div>
+                    </div>
+                    <div id="power-off-screen" class="power-off-screen" data-testid="power-off-screen"></div>
                     <div id="feedback" class="feedback">Ready</div>
                 </div>
             </div>
@@ -1705,7 +1874,7 @@
                     <button class="nav-btn nav-right" data-testid="nav-right" type="button" onclick="navMove('right')" aria-label="right">&#9654;</button>
                     <button class="nav-ok" data-testid="nav-ok" type="button" onclick="navSelect()" aria-label="center ok"></button>
                 </div>
-                <button class="call-key red" data-testid="right-bottom" type="button" onclick="exitAll()" aria-label="end call"></button>
+                <button class="call-key red" data-testid="right-bottom" type="button" onpointerdown="startPowerHold()" onpointerup="finishPowerHold()" onpointerleave="cancelPowerHold()" onclick="rightBottomClick()" aria-label="end call"></button>
             </div>
         </section>
 
@@ -1821,12 +1990,18 @@
         const state = {
             mode: "home",
             dialNumber: "",
+            dialCursor: 0,
             menuIndex: 0,
+            settingsIndex: 0,
             historyStack: [],
             recentApps: [],
             recentIndex: 0,
             rightHoldTimer: null,
             suppressRightClick: false,
+            powerHoldTimer: null,
+            suppressPowerClick: false,
+            powerMenuOpen: false,
+            booting: false,
             nowPlaying: null,
             galleryImages: loadJson(STORAGE.galleryImages, []),
             gallerySelectMode: false,
@@ -1893,6 +2068,9 @@
         const homeMiniTitle = document.getElementById("home-mini-title");
         const homeMiniSub = document.getElementById("home-mini-sub");
         const sidePlayPause = document.querySelector(".music-stack .play-pause");
+        const powerMenu = document.getElementById("power-menu");
+        const bootScreen = document.getElementById("boot-screen");
+        const powerOffScreen = document.getElementById("power-off-screen");
 
         function loadJson(key, fallback) {
             try {
@@ -1911,20 +2089,34 @@
                 element.classList.toggle("active", name === state.mode);
             });
 
-            dialNumber.textContent = state.dialNumber || "";
+            renderDialNumber();
             callNumber.textContent = state.dialNumber || "Unknown";
             volumeLevel.textContent = state.settings.volume;
             settingsVolume.textContent = state.settings.volume;
             renderMenuSelection();
+            renderSettingsSelection();
             renderCallHistory();
             renderRecentApps();
             renderGallery();
             renderCalculator();
             renderMusic();
             renderCameraControls();
+            renderPowerState();
             renderStatusBar();
             renderSoundState();
             nowPlaying.textContent = state.nowPlaying ? `Now playing: ${state.nowPlaying.title}` : "Now playing: -";
+        }
+
+        function renderDialNumber() {
+            if (!dialNumber) return;
+            state.dialCursor = Math.max(0, Math.min(state.dialCursor, state.dialNumber.length));
+            if (state.mode !== "dial") {
+                dialNumber.textContent = state.dialNumber || "";
+                return;
+            }
+            const before = escapeHtml(state.dialNumber.slice(0, state.dialCursor));
+            const after = escapeHtml(state.dialNumber.slice(state.dialCursor));
+            dialNumber.innerHTML = `${before}<span class="dial-caret" aria-hidden="true"></span>${after}`;
         }
 
         function renderStatusBar() {
@@ -1937,6 +2129,12 @@
             if (!soundIcon) return;
             soundIcon.classList.toggle("muted", state.soundMuted);
             soundIcon.setAttribute("aria-label", state.soundMuted ? "sound muted" : "sound on");
+        }
+
+        function renderPowerState() {
+            if (powerMenu) powerMenu.classList.toggle("active", state.powerMenuOpen);
+            if (bootScreen) bootScreen.classList.toggle("active", state.booting);
+            if (powerOffScreen) powerOffScreen.classList.toggle("active", !state.powered && !state.booting);
         }
 
         function getTouchEntryConfig() {
@@ -2004,6 +2202,7 @@
 
             const dialValue = value.replace(/[^\d*#]/g, "");
             state.dialNumber = dialValue;
+            state.dialCursor = dialValue.length;
             if (commit || dialValue) state.mode = "dial";
             render();
         }
@@ -2011,6 +2210,15 @@
         function renderMenuSelection() {
             document.querySelectorAll(".menu-item").forEach((item, index) => {
                 item.classList.toggle("selected", index === state.menuIndex);
+            });
+        }
+
+        function renderSettingsSelection() {
+            const rows = Array.from(document.querySelectorAll(".settings-row"));
+            if (!rows.length) return;
+            state.settingsIndex = Math.max(0, Math.min(state.settingsIndex, rows.length - 1));
+            rows.forEach((row, index) => {
+                row.classList.toggle("selected", index === state.settingsIndex);
             });
         }
 
@@ -2227,6 +2435,13 @@
         }
 
         function navMove(direction) {
+            if (state.mode === "dial") {
+                if (direction === "left") state.dialCursor = Math.max(0, state.dialCursor - 1);
+                if (direction === "right") state.dialCursor = Math.min(state.dialNumber.length, state.dialCursor + 1);
+                renderDialNumber();
+                return;
+            }
+
             if (state.mode === "camera") {
                 if (direction === "left") cycleCameraFilter(-1);
                 if (direction === "right") cycleCameraFilter(1);
@@ -2251,6 +2466,14 @@
                 return;
             }
 
+            if (state.mode === "settings") {
+                const rows = document.querySelectorAll(".settings-row");
+                if (direction === "down" || direction === "right") state.settingsIndex = Math.min(rows.length - 1, state.settingsIndex + 1);
+                if (direction === "up" || direction === "left") state.settingsIndex = Math.max(0, state.settingsIndex - 1);
+                renderSettingsSelection();
+                return;
+            }
+
             if (state.mode === "calculator") {
                 const operatorMap = { left: "+", up: "-", right: "*", down: "/" };
                 calcOperator(operatorMap[direction]);
@@ -2272,7 +2495,7 @@
                 return;
             }
 
-            if (state.mode !== "menu") {
+            if (state.mode === "home") {
                 const shortcutMap = {
                     up: state.settings.shortcuts.navUp,
                     down: state.settings.shortcuts.navDown,
@@ -2282,6 +2505,8 @@
                 openApp(shortcutMap[direction] || "menu");
                 return;
             }
+
+            if (state.mode !== "menu") return;
 
             const columns = 3;
             if (direction === "right") state.menuIndex = (state.menuIndex + 1) % APPS.length;
@@ -2365,7 +2590,9 @@
                 return;
             }
             stopCamera();
-            state.dialNumber += digit;
+            if (state.mode !== "dial") state.dialCursor = state.dialNumber.length;
+            state.dialNumber = `${state.dialNumber.slice(0, state.dialCursor)}${digit}${state.dialNumber.slice(state.dialCursor)}`;
+            state.dialCursor += 1;
             state.mode = "dial";
             render();
             pulse("Key " + digit);
@@ -2396,11 +2623,73 @@
             stopCamera();
             state.galleryDetailOpen = false;
             state.galleryInfoOpen = false;
+            state.powerMenuOpen = false;
             state.mode = "home";
             state.dialNumber = "";
+            state.dialCursor = 0;
             state.historyStack = [];
             render();
             pulse("Back to home");
+        }
+
+        function rightBottomClick() {
+            if (state.suppressPowerClick) {
+                state.suppressPowerClick = false;
+                return;
+            }
+            if (state.mode === "dial") {
+                exitAll();
+                return;
+            }
+            exitAll();
+        }
+
+        function startPowerHold() {
+            state.suppressPowerClick = false;
+            clearTimeout(state.powerHoldTimer);
+            state.powerHoldTimer = setTimeout(() => {
+                state.suppressPowerClick = true;
+                openPowerMenu();
+            }, 650);
+        }
+
+        function finishPowerHold() {
+            clearTimeout(state.powerHoldTimer);
+        }
+
+        function cancelPowerHold() {
+            clearTimeout(state.powerHoldTimer);
+        }
+
+        function openPowerMenu() {
+            state.powerMenuOpen = true;
+            renderPowerState();
+            pulse("Power");
+        }
+
+        function powerOff() {
+            stopCamera();
+            state.powered = false;
+            state.powerMenuOpen = false;
+            state.booting = false;
+            state.mode = "home";
+            render();
+            pulse("Power off");
+        }
+
+        function rebootPhone() {
+            stopCamera();
+            state.powerMenuOpen = false;
+            state.powered = true;
+            state.booting = true;
+            renderPowerState();
+            setTimeout(() => {
+                state.booting = false;
+                state.mode = "home";
+                state.historyStack = [];
+                render();
+                pulse("Ready");
+            }, 1300);
         }
 
         function backHome() {
@@ -2441,7 +2730,25 @@
                 state.suppressRightClick = false;
                 return;
             }
+            if (state.mode === "dial") {
+                deleteDialCharacter();
+                return;
+            }
             backOneStep();
+        }
+
+        function deleteDialCharacter() {
+            if (!state.dialNumber || state.dialCursor <= 0) {
+                pulse("Clear");
+                return;
+            }
+            state.dialNumber = `${state.dialNumber.slice(0, state.dialCursor - 1)}${state.dialNumber.slice(state.dialCursor)}`;
+            state.dialCursor -= 1;
+            if (!state.dialNumber) {
+                state.mode = "home";
+            }
+            render();
+            pulse("Deleted");
         }
 
         function pressKey(name) {
@@ -2608,6 +2915,31 @@
             saveJson(STORAGE.musicTracks, state.musicTracks.map(({ title, artist }) => ({ title, artist })));
             render();
             pulse(`${state.musicTracks.length} songs imported`);
+        }
+
+        async function importGalleryImages(event) {
+            const files = Array.from(event.target.files || []).filter((file) => file.type.startsWith("image/"));
+            if (!files.length) {
+                pulse("No photos");
+                return;
+            }
+            const imported = await Promise.all(files.map((file) => new Promise((resolve) => {
+                const reader = new FileReader();
+                reader.onload = () => resolve({
+                    name: file.name.replace(/\.[^.]+$/, ""),
+                    dataUrl: reader.result,
+                    type: "image",
+                    createdAt: new Date().toLocaleString("en-GB", { dateStyle: "short", timeStyle: "short" })
+                });
+                reader.readAsDataURL(file);
+            })));
+            state.galleryImages = [...imported, ...state.galleryImages].slice(0, 18);
+            state.selectedGalleryIndex = 1;
+            state.galleryDetailOpen = false;
+            saveJson(STORAGE.galleryImages, state.galleryImages);
+            event.target.value = "";
+            renderGallery();
+            pulse(`${imported.length} photo${imported.length > 1 ? "s" : ""} added`);
         }
 
         function calcDigit(digit) {
