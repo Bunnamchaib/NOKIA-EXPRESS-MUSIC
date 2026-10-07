@@ -169,7 +169,8 @@ test('left music controls are compact and stay inside the red rail frame', async
     return { left: rect.left, right: rect.right, width: rect.width };
   }));
 
-  await expect(page.locator('.music-stack .side-key svg')).toHaveCount(3);
+  await expect(page.locator('.music-stack .side-key')).toHaveCount(3);
+  await expect(page.locator('.music-stack .side-key svg')).toHaveCount(4);
   await expect(page.locator('.music-stack .side-key').first()).toHaveCSS('color', 'rgb(255, 255, 255)');
 
   for (const button of buttons) {
@@ -222,6 +223,19 @@ test('status bar uses phone-style icons for 5G signal, wifi, and battery', async
   await expect(page.locator('[data-testid="signal-icon"] i')).toHaveCount(5);
   await expect(page.locator('[data-testid="wifi-icon"] .wifi-arc')).toHaveCount(3);
   await expect(page.locator('[data-testid="battery-icon"] .battery-fill')).toHaveCount(1);
+  await expect(page.locator('[data-testid="sound-icon"]')).toHaveAttribute('aria-label', 'sound on');
+});
+
+test('holding hash toggles silent mode and updates the sound status icon', async ({ page }) => {
+  await page.goto(appUrl);
+
+  await page.locator('[data-testid="hash-key"]').dispatchEvent('pointerdown');
+  await page.waitForTimeout(720);
+  await page.locator('[data-testid="hash-key"]').dispatchEvent('pointerup');
+
+  await expect(page.locator('[data-testid="sound-icon"]')).toHaveClass(/muted/);
+  await expect(page.locator('[data-testid="sound-icon"]')).toHaveAttribute('aria-label', 'sound muted');
+  await expect.poll(async () => page.evaluate(() => localStorage.getItem('nokia.soundMuted'))).toBe('true');
 });
 
 test('music opens empty with an import control and bottom player', async ({ page }) => {
@@ -240,6 +254,35 @@ test('music opens empty with an import control and bottom player', async ({ page
   await page.locator('[data-testid="right-bottom"]').click();
 
   await expect(page.locator('[data-testid="now-playing"]')).toContainText('demo-song');
+});
+
+test('left music hardware controls pause, resume, and change tracks with home mini player', async ({ page }) => {
+  await page.addInitScript(() => {
+    localStorage.setItem('nokia.musicTracks', JSON.stringify([
+      { title: 'first-song', artist: 'local' },
+      { title: 'second-song', artist: 'local' }
+    ]));
+  });
+  await page.goto(appUrl);
+  await page.evaluate(() => window.openAppForTest('music'));
+
+  await page.getByRole('button', { name: /first-song/ }).click();
+  await expect(page.locator('[data-testid="music-player-title"]')).toHaveText('first-song');
+  await expect(page.locator('[data-testid="music-player-sub"]')).toHaveText('Playing');
+  await expect(page.getByLabel('play pause')).toHaveClass(/is-playing/);
+
+  await page.getByLabel('play pause').click();
+  await expect(page.locator('[data-testid="music-player-sub"]')).toHaveText('Paused');
+  await expect(page.getByLabel('play pause')).not.toHaveClass(/is-playing/);
+
+  await page.getByLabel('next track').click();
+  await expect(page.locator('[data-testid="music-player-title"]')).toHaveText('second-song');
+  await page.getByLabel('previous track').click();
+  await expect(page.locator('[data-testid="music-player-title"]')).toHaveText('first-song');
+
+  await page.locator('[data-testid="right-bottom"]').click();
+  await expect(page.locator('[data-testid="home-mini-player"]')).toHaveClass(/active/);
+  await expect(page.locator('[data-testid="home-mini-title"]')).toHaveText('first-song');
 });
 
 test('calculator uses phone keypad digits and d-pad operators without leaving the app', async ({ page }) => {

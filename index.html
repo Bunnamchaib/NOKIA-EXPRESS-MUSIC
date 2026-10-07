@@ -164,6 +164,18 @@
             height: 24px;
         }
 
+        .music-stack .pause-icon,
+        .music-stack .side-key.is-playing .play-icon,
+        .music-play .pause-icon,
+        .music-play.is-playing .play-icon {
+            display: none;
+        }
+
+        .music-stack .side-key.is-playing .pause-icon,
+        .music-play.is-playing .pause-icon {
+            display: block;
+        }
+
         .volume-stack {
             position: absolute;
             right: 8px;
@@ -314,6 +326,42 @@
             text-align: right;
         }
 
+        .sound-icon {
+            width: 13px;
+            height: 13px;
+            display: inline-grid;
+            place-items: center;
+            color: #dff7ff;
+        }
+
+        .sound-icon svg {
+            width: 13px;
+            height: 13px;
+            display: block;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        .sound-icon .mute-mark {
+            display: none;
+            stroke: #ff6b7a;
+        }
+
+        .sound-icon.muted {
+            color: #ffb9c1;
+        }
+
+        .sound-icon.muted .sound-wave {
+            display: none;
+        }
+
+        .sound-icon.muted .mute-mark {
+            display: block;
+        }
+
         .bars {
             letter-spacing: -1px;
             color: #d8f5ff;
@@ -428,6 +476,49 @@
             margin-top: 5px;
             color: #dff5ff;
             font-size: 11px;
+        }
+
+        .home-mini-player {
+            position: absolute;
+            left: 10px;
+            right: 10px;
+            bottom: 70px;
+            z-index: 3;
+            display: none;
+            grid-template-columns: 34px 1fr 28px;
+            align-items: center;
+            gap: 8px;
+            padding: 7px 8px;
+            border-radius: 9px;
+            background: rgba(2, 5, 7, 0.84);
+            box-shadow: 0 8px 18px rgba(0, 0, 0, 0.38), inset 0 1px rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(6px);
+        }
+
+        .home-mini-player.active {
+            display: grid;
+        }
+
+        .home-mini-art {
+            width: 34px;
+            height: 34px;
+            border-radius: 7px;
+            background: url("9yb1x8i34faf1.jpg") 50% 28% / 214% auto no-repeat;
+        }
+
+        .home-mini-title {
+            color: #fff;
+            font-size: 11px;
+            font-weight: 800;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .home-mini-sub {
+            margin-top: 2px;
+            color: #9aa8b1;
+            font-size: 9px;
         }
 
         .dial-view,
@@ -799,9 +890,16 @@
             height: 30px;
             border: 0;
             border-radius: 50%;
+            display: grid;
+            place-items: center;
             color: #07111b;
             background: #fff;
-            font-size: 13px;
+        }
+
+        .music-play svg {
+            width: 14px;
+            height: 14px;
+            fill: currentColor;
         }
 
         .camera-topbar {
@@ -1028,23 +1126,24 @@
         }
 
         .touch-entry-key {
-            position: relative;
+            position: absolute;
+            right: -11px;
+            bottom: 196px;
             z-index: 8;
-            width: 58px;
-            height: 30px;
+            width: 25px;
+            height: 49px;
             border: 0;
-            border-radius: 999px;
+            border-radius: 13px;
             display: grid;
             place-items: center;
-            justify-self: center;
             color: #fff;
-            background: linear-gradient(#6b747c, #171a1e);
-            box-shadow: inset 0 1px rgba(255, 255, 255, 0.32), 0 4px 8px rgba(0, 0, 0, 0.45);
+            background: linear-gradient(90deg, #4d5660, #14181d);
+            box-shadow: inset 1px 0 rgba(255, 255, 255, 0.28), 0 4px 8px rgba(0, 0, 0, 0.45);
         }
 
         .touch-entry-key svg {
-            width: 25px;
-            height: 18px;
+            width: 16px;
+            height: 22px;
             fill: none;
             stroke: currentColor;
             stroke-width: 1.8;
@@ -1211,10 +1310,12 @@
                 </svg>
             </button>
             <button class="side-key play-pause" type="button" onclick="pressKey('Play / Pause')" aria-label="play pause">
-                <svg viewBox="0 0 22 24" aria-hidden="true">
+                <svg class="play-icon" viewBox="0 0 22 24" aria-hidden="true">
                     <path d="M3.5 4.5v15l8-7.5z"></path>
-                    <rect x="14" y="5" width="2.4" height="14" rx="1.2"></rect>
-                    <rect x="18.1" y="5" width="2.4" height="14" rx="1.2"></rect>
+                </svg>
+                <svg class="pause-icon" viewBox="0 0 22 24" aria-hidden="true">
+                    <rect x="6" y="5" width="3.2" height="14" rx="1.2"></rect>
+                    <rect x="12.8" y="5" width="3.2" height="14" rx="1.2"></rect>
                 </svg>
             </button>
             <button class="side-key" type="button" onclick="pressKey('Next')" aria-label="next track">
@@ -1235,6 +1336,12 @@
             </button>
             <button class="side-key" data-testid="volume-down" type="button" onclick="changeVolume(-1)" aria-label="volume down">-</button>
         </div>
+        <button class="touch-entry-key" data-testid="touch-entry-key" type="button" onclick="openTouchEntry()" aria-label="open iPhone keyboard">
+            <svg viewBox="0 0 32 22" aria-hidden="true">
+                <rect x="2.5" y="3" width="27" height="16" rx="3"></rect>
+                <path d="M7 8h.01M11 8h.01M15 8h.01M19 8h.01M23 8h.01M8 12h.01M12 12h.01M16 12h.01M20 12h.01M24 12h.01M10 16h12"></path>
+            </svg>
+        </button>
 
         <div class="earpiece"></div>
 
@@ -1253,6 +1360,14 @@
                             <span class="signal-icon" data-testid="signal-icon" aria-label="signal 5 bars"><i></i><i></i><i></i><i></i><i></i></span>
                             <span class="wifi-icon" data-testid="wifi-icon" aria-label="wifi 3 bars"><span class="wifi-arc"></span><span class="wifi-arc"></span><span class="wifi-arc"></span></span>
                             <span class="battery-icon" data-testid="battery-icon" aria-label="battery"><span class="battery-fill"></span></span>
+                            <span id="sound-icon" class="sound-icon" data-testid="sound-icon" aria-label="sound on">
+                                <svg viewBox="0 0 24 24" aria-hidden="true">
+                                    <path d="M4 10v4h4l5 4V6l-5 4z"></path>
+                                    <path class="sound-wave" d="M16 9.5c1.1 1.4 1.1 3.6 0 5"></path>
+                                    <path class="sound-wave" d="M18.5 7c2.2 2.7 2.2 7.3 0 10"></path>
+                                    <path class="mute-mark" d="M17 9l5 5M22 9l-5 5"></path>
+                                </svg>
+                            </span>
                         </span>
                         <span class="status-right" id="status-time">00:00</span>
                     </div>
@@ -1263,6 +1378,17 @@
                             <div class="track-artist">Cute Is What We Aim For</div>
                             <div class="now-playing" data-testid="now-playing">Now playing: -</div>
                             <div class="tiny-copy">Volume <span data-testid="volume-level">5</span>/10</div>
+                        </div>
+                        <div id="home-mini-player" class="home-mini-player" data-testid="home-mini-player">
+                            <div class="home-mini-art" aria-hidden="true"></div>
+                            <div>
+                                <div id="home-mini-title" class="home-mini-title" data-testid="home-mini-title"></div>
+                                <div id="home-mini-sub" class="home-mini-sub" data-testid="home-mini-sub"></div>
+                            </div>
+                            <button class="music-play" type="button" onclick="toggleMusicPlay()" aria-label="toggle home music">
+                                <svg class="play-icon" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 2.8v10.4L12.5 8z"></path></svg>
+                                <svg class="pause-icon" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 3h3v10H4zM9 3h3v10H9z"></path></svg>
+                            </button>
                         </div>
                     </section>
 
@@ -1349,7 +1475,10 @@
                                 <div class="music-player-title" data-testid="music-player-title">No music</div>
                                 <div class="music-player-sub" data-testid="music-player-sub">Nothing playing</div>
                             </div>
-                            <button class="music-play" type="button" onclick="toggleMusicPlay()" aria-label="play music">&#9654;</button>
+                            <button class="music-play" type="button" onclick="toggleMusicPlay()" aria-label="play music">
+                                <svg class="play-icon" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 2.8v10.4L12.5 8z"></path></svg>
+                                <svg class="pause-icon" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 3h3v10H4zM9 3h3v10H9z"></path></svg>
+                            </button>
                         </div>
                     </section>
 
@@ -1437,12 +1566,7 @@
                     <button class="soft-key" data-testid="left-soft" type="button" onclick="leftSoftAction()" aria-label="left soft key menu"></button>
                     <span class="soft-name" data-testid="left-bottom-name">ซ้ายล่าง</span>
                 </div>
-                <button class="touch-entry-key" data-testid="touch-entry-key" type="button" onclick="openTouchEntry()" aria-label="open iPhone keyboard">
-                    <svg viewBox="0 0 32 22" aria-hidden="true">
-                        <rect x="2.5" y="3" width="27" height="16" rx="3"></rect>
-                        <path d="M7 8h.01M11 8h.01M15 8h.01M19 8h.01M23 8h.01M8 12h.01M12 12h.01M16 12h.01M20 12h.01M24 12h.01M10 16h12"></path>
-                    </svg>
-                </button>
+                <span></span>
                 <div class="soft-slot">
                     <span class="soft-name" data-testid="right-top-name">ขวาบน</span>
                     <button class="soft-key" data-testid="right-soft" type="button" onpointerdown="startRightSoftHold()" onpointerup="finishRightSoftHold()" onpointerleave="cancelRightSoftHold()" onclick="rightSoftClick()" aria-label="right soft key back"></button>
@@ -1475,7 +1599,7 @@
             <button class="key" type="button" data-key="9" onclick="pressDigit('9')"><span class="key-main">9</span><span class="key-sub">WXYZ</span></button>
             <button class="key" type="button" data-key="*" onclick="pressDigit('*')"><span class="key-main">*</span><span class="key-sub">+</span></button>
             <button class="key" type="button" data-key="0" onclick="pressDigit('0')"><span class="key-main">0</span><span class="key-sub">&#8635;</span></button>
-            <button class="key" type="button" data-key="#" onclick="pressDigit('#')"><span class="key-main">#</span><span class="key-sub">&#9834;</span></button>
+            <button class="key" type="button" data-key="#" data-testid="hash-key" onpointerdown="startSilentHold()" onpointerup="finishSilentHold()" onpointerleave="cancelSilentHold()" onclick="pressHashKey()"><span class="key-main">#</span><span class="key-sub">&#9834;</span></button>
         </section>
     </main>
 
@@ -1540,7 +1664,8 @@
             wallpaper: "nokia.wallpaper",
             settings: "nokia.settings",
             galleryImages: "nokia.galleryImages",
-            musicTracks: "nokia.musicTracks"
+            musicTracks: "nokia.musicTracks",
+            soundMuted: "nokia.soundMuted"
         };
 
         const defaultSettings = {
@@ -1580,6 +1705,10 @@
             activeTrackIndex: -1,
             musicPlaying: false,
             audio: null,
+            audioContext: null,
+            soundMuted: localStorage.getItem(STORAGE.soundMuted) === "true",
+            silentHoldTimer: null,
+            suppressHashClick: false,
             touchEntryMode: null,
             calc: { display: "0", stored: null, operator: null, selectedOperator: "+", fresh: true },
             stream: null,
@@ -1612,6 +1741,11 @@
         const musicPlayerSub = document.querySelector("[data-testid='music-player-sub']");
         const touchEntryPanel = document.getElementById("touch-entry-panel");
         const touchEntryInput = document.getElementById("touch-entry-input");
+        const soundIcon = document.getElementById("sound-icon");
+        const homeMiniPlayer = document.getElementById("home-mini-player");
+        const homeMiniTitle = document.getElementById("home-mini-title");
+        const homeMiniSub = document.getElementById("home-mini-sub");
+        const sidePlayPause = document.querySelector(".music-stack .play-pause");
 
         function loadJson(key, fallback) {
             try {
@@ -1641,6 +1775,7 @@
             renderCalculator();
             renderMusic();
             renderStatusBar();
+            renderSoundState();
             nowPlaying.textContent = state.nowPlaying ? `Now playing: ${state.nowPlaying.title}` : "Now playing: -";
         }
 
@@ -1648,6 +1783,12 @@
             const now = new Date();
             document.getElementById("status-date").textContent = now.toLocaleDateString("en-GB", { day: "2-digit", month: "short" });
             document.getElementById("status-time").textContent = now.toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" });
+        }
+
+        function renderSoundState() {
+            if (!soundIcon) return;
+            soundIcon.classList.toggle("muted", state.soundMuted);
+            soundIcon.setAttribute("aria-label", state.soundMuted ? "sound muted" : "sound on");
         }
 
         function getTouchEntryConfig() {
@@ -1824,6 +1965,18 @@
             const activeTrack = state.musicTracks[state.activeTrackIndex];
             musicPlayerTitle.textContent = activeTrack ? activeTrack.title : "No music";
             musicPlayerSub.textContent = activeTrack ? (state.musicPlaying ? "Playing" : "Paused") : "Nothing playing";
+            document.querySelectorAll(".music-play").forEach((button) => {
+                button.classList.toggle("is-playing", state.musicPlaying);
+                button.setAttribute("aria-label", state.musicPlaying ? "pause music" : "play music");
+            });
+            if (sidePlayPause) sidePlayPause.classList.toggle("is-playing", state.musicPlaying);
+
+            if (homeMiniPlayer) {
+                homeMiniPlayer.classList.toggle("active", Boolean(activeTrack));
+                homeMiniTitle.textContent = activeTrack ? activeTrack.title : "";
+                homeMiniSub.textContent = activeTrack ? `${state.musicPlaying ? "Playing" : "Paused"} · ${activeTrack.artist || "Local file"}` : "";
+            }
+            updateMediaSession();
         }
 
         function rememberRecent(mode) {
@@ -1920,6 +2073,73 @@
             pulse(APPS[state.menuIndex]);
         }
 
+        function getAudioContext() {
+            const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+            if (!AudioContextClass) return null;
+            if (!state.audioContext) state.audioContext = new AudioContextClass();
+            if (state.audioContext.state === "suspended") state.audioContext.resume().catch(() => {});
+            return state.audioContext;
+        }
+
+        function playTone({ frequency = 760, duration = 0.055, type = "square", gain = 0.035 } = {}) {
+            if (state.soundMuted) return;
+            const audioContext = getAudioContext();
+            if (!audioContext) return;
+            const oscillator = audioContext.createOscillator();
+            const volume = audioContext.createGain();
+            oscillator.type = type;
+            oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime);
+            volume.gain.setValueAtTime(gain, audioContext.currentTime);
+            volume.gain.exponentialRampToValueAtTime(0.0001, audioContext.currentTime + duration);
+            oscillator.connect(volume);
+            volume.connect(audioContext.destination);
+            oscillator.start();
+            oscillator.stop(audioContext.currentTime + duration);
+        }
+
+        function playKeySound() {
+            playTone({ frequency: 820, duration: 0.045, type: "square", gain: 0.025 });
+        }
+
+        function playShutterSound() {
+            if (state.soundMuted) return;
+            playTone({ frequency: 1250, duration: 0.045, type: "square", gain: 0.045 });
+            setTimeout(() => playTone({ frequency: 620, duration: 0.075, type: "triangle", gain: 0.035 }), 58);
+        }
+
+        function toggleSilentMode() {
+            state.soundMuted = !state.soundMuted;
+            localStorage.setItem(STORAGE.soundMuted, String(state.soundMuted));
+            renderSoundState();
+            pulse(state.soundMuted ? "Silent mode" : "Sound on");
+            if (!state.soundMuted) playTone({ frequency: 980, duration: 0.07, type: "sine", gain: 0.04 });
+        }
+
+        function startSilentHold() {
+            state.suppressHashClick = false;
+            clearTimeout(state.silentHoldTimer);
+            state.silentHoldTimer = setTimeout(() => {
+                state.suppressHashClick = true;
+                toggleSilentMode();
+            }, 650);
+        }
+
+        function finishSilentHold() {
+            clearTimeout(state.silentHoldTimer);
+        }
+
+        function cancelSilentHold() {
+            clearTimeout(state.silentHoldTimer);
+        }
+
+        function pressHashKey() {
+            if (state.suppressHashClick) {
+                state.suppressHashClick = false;
+                return;
+            }
+            pressDigit("#");
+        }
+
         function pressDigit(digit) {
             if (state.mode === "calculator" && /^[0-9]$/.test(digit)) {
                 calcDigit(digit);
@@ -2003,6 +2223,18 @@
         }
 
         function pressKey(name) {
+            if (name === "Previous") {
+                previousTrack();
+                return;
+            }
+            if (name === "Next") {
+                nextTrack();
+                return;
+            }
+            if (name === "Play / Pause") {
+                toggleMusicPlay();
+                return;
+            }
             pulse(name);
         }
 
@@ -2034,6 +2266,10 @@
             pulse("Playing " + title);
         }
 
+        function getActiveTrack() {
+            return state.musicTracks[state.activeTrackIndex] || null;
+        }
+
         function playTrackAt(index) {
             const track = state.musicTracks[index];
             if (!track) return;
@@ -2048,9 +2284,11 @@
 
             if (track.url) {
                 state.audio = new Audio(track.url);
+                state.audio.preload = "auto";
+                state.audio.onended = () => nextTrack();
                 state.audio.play().catch(() => {
                     state.musicPlaying = false;
-                    renderMusic();
+                    render();
                     pulse("Tap play again");
                 });
             }
@@ -2059,8 +2297,28 @@
             pulse("Playing " + track.title);
         }
 
+        function nextTrack() {
+            if (!state.musicTracks.length) {
+                pulse("No music");
+                return;
+            }
+            const nextIndex = state.activeTrackIndex < 0 ? 0 : (state.activeTrackIndex + 1) % state.musicTracks.length;
+            playTrackAt(nextIndex);
+        }
+
+        function previousTrack() {
+            if (!state.musicTracks.length) {
+                pulse("No music");
+                return;
+            }
+            const previousIndex = state.activeTrackIndex < 0
+                ? 0
+                : (state.activeTrackIndex + state.musicTracks.length - 1) % state.musicTracks.length;
+            playTrackAt(previousIndex);
+        }
+
         function toggleMusicPlay() {
-            const activeTrack = state.musicTracks[state.activeTrackIndex];
+            const activeTrack = getActiveTrack();
             if (!activeTrack) {
                 pulse("No music");
                 return;
@@ -2072,12 +2330,38 @@
             } else if (state.audio) {
                 state.audio.play().catch(() => pulse("Playback blocked"));
                 state.musicPlaying = true;
+                state.nowPlaying = { title: activeTrack.title, artist: activeTrack.artist || "Local file" };
+            } else if (state.musicPlaying) {
+                state.musicPlaying = false;
             } else {
                 playTrackAt(state.activeTrackIndex);
                 return;
             }
 
-            renderMusic();
+            render();
+        }
+
+        function updateMediaSession() {
+            if (!("mediaSession" in navigator)) return;
+            const activeTrack = getActiveTrack();
+            if (!activeTrack) return;
+            navigator.mediaSession.metadata = new MediaMetadata({
+                title: activeTrack.title,
+                artist: activeTrack.artist || "express music",
+                album: "express music",
+                artwork: [
+                    { src: "9yb1x8i34faf1.jpg", sizes: "512x512", type: "image/jpeg" }
+                ]
+            });
+            navigator.mediaSession.playbackState = state.musicPlaying ? "playing" : "paused";
+            navigator.mediaSession.setActionHandler("play", () => {
+                if (!state.musicPlaying) toggleMusicPlay();
+            });
+            navigator.mediaSession.setActionHandler("pause", () => {
+                if (state.musicPlaying) toggleMusicPlay();
+            });
+            navigator.mediaSession.setActionHandler("previoustrack", previousTrack);
+            navigator.mediaSession.setActionHandler("nexttrack", nextTrack);
         }
 
         function importMusicFiles(event) {
@@ -2098,8 +2382,9 @@
             }));
             state.activeTrackIndex = 0;
             state.musicPlaying = false;
+            state.nowPlaying = null;
             saveJson(STORAGE.musicTracks, state.musicTracks.map(({ title, artist }) => ({ title, artist })));
-            renderMusic();
+            render();
             pulse(`${state.musicTracks.length} songs imported`);
         }
 
@@ -2150,6 +2435,7 @@
                 }
             }
 
+            playShutterSound();
             const name = (nameInput.value || "Nokia photo").trim();
             const dataUrl = makePhotoDataUrl(name);
             const image = {
@@ -2315,6 +2601,10 @@
                 closeTouchEntry();
             }
         });
+
+        document.addEventListener("pointerdown", (event) => {
+            if (event.target.closest && event.target.closest("button")) playKeySound();
+        }, { passive: true });
 
         document.addEventListener("keydown", (event) => {
             if (event.target === touchEntryInput) return;
