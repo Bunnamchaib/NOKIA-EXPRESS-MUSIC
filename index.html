@@ -299,6 +299,17 @@
                 #050505;
         }
 
+        .home-view.wallpaper-active {
+            background-repeat: no-repeat;
+            background-size: cover;
+            background-position: center;
+        }
+
+        .home-view.wallpaper-active .album-card,
+        .home-view.wallpaper-active .track-info {
+            display: none;
+        }
+
         .status-bar {
             position: absolute;
             inset: 0 0 auto 0;
@@ -2902,18 +2913,9 @@
         function setWallpaper(path, options = {}) {
             localStorage.setItem(STORAGE.wallpaper, path);
             const homeView = document.querySelector(".home-view");
-            const albumCard = document.querySelector(".album-card");
             if (homeView) {
-                homeView.style.backgroundImage =
-                    `linear-gradient(to bottom, rgba(0,0,0,.08), rgba(0,0,0,.88) 72%), url("${path}")`;
-                homeView.style.backgroundSize = "cover";
-                homeView.style.backgroundPosition = "center";
-            }
-            if (albumCard) {
-                albumCard.style.backgroundImage =
-                    `linear-gradient(to bottom, rgba(0,0,0,0), rgba(0,0,0,.16)), url("${path}")`;
-                albumCard.style.backgroundSize = "cover";
-                albumCard.style.backgroundPosition = "center";
+                homeView.classList.add("wallpaper-active");
+                homeView.style.backgroundImage = `url("${path}")`;
             }
             if (!options.silent) pulse("Wallpaper set");
         }
