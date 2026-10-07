@@ -338,12 +338,57 @@ test('camera center key captures a named photo into Nokia gallery and exposes sh
   await expect(page.locator('[data-testid="download-photo"]')).toBeVisible();
 });
 
+test('gallery opens a full screen photo viewer with share, info, and delete actions', async ({ page }) => {
+  await page.addInitScript(() => {
+    localStorage.setItem('nokia.galleryImages', JSON.stringify([
+      {
+        name: 'market-shot',
+        dataUrl: 'data:image/png;base64,iVBORw0KGgo=',
+        createdAt: '07/10/2026, 14:30'
+      }
+    ]));
+  });
+  await page.goto(appUrl);
+  await page.evaluate(() => window.openAppForTest('gallery'));
+
+  await page.getByRole('button', { name: 'market-shot' }).click();
+  await expect(page.locator('[data-testid="gallery-detail"]')).toHaveClass(/active/);
+  await expect(page.locator('[data-testid="gallery-detail-share"]')).toBeVisible();
+  await expect(page.locator('[data-testid="gallery-detail-delete"]')).toBeVisible();
+
+  await page.locator('[data-testid="nav-ok"]').click();
+  await expect(page.locator('[data-testid="gallery-detail-info-panel"]')).toContainText('market-shot');
+  await expect(page.locator('[data-testid="gallery-detail-info-panel"]')).toContainText('07/10/2026');
+
+  await page.locator('[data-testid="gallery-detail-delete"]').click();
+  await expect.poll(async () => JSON.parse(await page.evaluate(() => localStorage.getItem('nokia.galleryImages')) || '[]')).toHaveLength(0);
+  await expect(page.locator('[data-testid="gallery-detail"]')).not.toHaveClass(/active/);
+});
+
 test('camera left soft key opens camera settings', async ({ page }) => {
   await page.goto(appUrl);
   await page.evaluate(() => window.openAppForTest('camera'));
 
   await page.locator('[data-testid="left-soft"]').click();
   await expect(page.locator('.screen-view.active [data-testid="screen-title"]')).toHaveText(/Camera Settings/);
+});
+
+test('camera supports d-pad filters, front-back switching, and video mode controls', async ({ page }) => {
+  await page.goto(appUrl);
+  await page.evaluate(() => window.openAppForTest('camera'));
+
+  await page.locator('[data-testid="nav-right"]').click();
+  await expect(page.locator('[data-testid="camera-mode-pill"]')).toContainText('VIVID');
+  await expect(page.locator('[data-testid="camera-feed"]')).toHaveCSS('filter', /saturate/);
+
+  await page.locator('[data-testid="left-soft"]').click();
+  await page.locator('[data-testid="camera-facing-toggle"]').click();
+  await expect(page.locator('[data-testid="camera-facing-toggle"]')).toContainText('Front');
+
+  await page.locator('[data-testid="camera-video-toggle"]').click();
+  await page.getByRole('button', { name: /back to camera/i }).click();
+  await expect(page.locator('[data-testid="camera-mode-pill"]')).toContainText('VIDEO');
+  await expect(page.locator('[data-testid="camera-shutter"]')).toHaveClass(/video-mode/);
 });
 
 test('camera shutter stays fully visible inside the screen frame', async ({ page }) => {

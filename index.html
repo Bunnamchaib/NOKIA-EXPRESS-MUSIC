@@ -720,7 +720,8 @@
             background: #d7dce1;
         }
 
-        .gallery-tile img {
+        .gallery-tile img,
+        .gallery-tile video {
             width: 100%;
             height: 100%;
             display: block;
@@ -787,6 +788,89 @@
             color: #0878ff;
             background: transparent;
             font-size: 18px;
+        }
+
+        .gallery-detail {
+            position: absolute;
+            inset: 0;
+            z-index: 12;
+            display: none;
+            grid-template-rows: auto 1fr auto;
+            color: #fff;
+            background: #000;
+        }
+
+        .gallery-detail.active {
+            display: grid;
+        }
+
+        .gallery-detail-bar {
+            position: relative;
+            z-index: 2;
+            display: grid;
+            grid-template-columns: 54px 1fr 54px;
+            align-items: center;
+            padding: 10px 9px 8px;
+            background: linear-gradient(rgba(0, 0, 0, 0.7), transparent);
+        }
+
+        .gallery-detail-title {
+            border: 0;
+            color: #fff;
+            background: transparent;
+            font-size: 12px;
+            font-weight: 700;
+            text-align: center;
+        }
+
+        .gallery-detail-action {
+            border: 0;
+            border-radius: 999px;
+            min-width: 42px;
+            height: 30px;
+            padding: 0 10px;
+            color: #fff;
+            background: rgba(255, 255, 255, 0.18);
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .gallery-detail-action.danger {
+            color: #ff605f;
+            background: rgba(255, 96, 95, 0.16);
+        }
+
+        .gallery-stage {
+            min-height: 0;
+            display: grid;
+            place-items: center;
+            padding: 4px;
+        }
+
+        .gallery-stage img,
+        .gallery-stage video {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            border-radius: 3px;
+        }
+
+        .gallery-info-panel {
+            display: none;
+            padding: 10px 12px 12px;
+            background: rgba(18, 18, 20, 0.9);
+            font-size: 12px;
+            line-height: 1.45;
+        }
+
+        .gallery-info-panel.active {
+            display: block;
+        }
+
+        .gallery-info-panel strong {
+            display: block;
+            margin-bottom: 3px;
+            font-size: 14px;
         }
 
         .calc-ops {
@@ -927,6 +1011,7 @@
         }
 
         .camera-pill {
+            border: 0;
             border-radius: 999px;
             padding: 5px 10px;
             color: #fff;
@@ -982,6 +1067,18 @@
             background: #fff;
         }
 
+        .camera-shutter.video-mode::after {
+            width: 28px;
+            height: 28px;
+            margin-top: 11px;
+            border-radius: 8px;
+            background: #ff3b30;
+        }
+
+        .camera-shutter.recording {
+            border-color: #ff3b30;
+        }
+
         .camera-mini-control {
             width: 38px;
             height: 38px;
@@ -1001,7 +1098,8 @@
         }
 
         .camera-settings-panel input,
-        .camera-settings-panel select {
+        .camera-settings-panel select,
+        .camera-settings-panel button {
             width: 100%;
             border: 1px solid rgba(255,255,255,.24);
             border-radius: 9px;
@@ -1009,6 +1107,12 @@
             color: #fff;
             background: #111820;
             font-size: 12px;
+        }
+
+        .camera-settings-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
         }
 
         .metric {
@@ -1438,6 +1542,15 @@
                             <button class="gallery-icon-btn" type="button" onclick="setSelectedAsWallpaper()" aria-label="set selected as wallpaper">&#9728;</button>
                             <button class="gallery-icon-btn" data-testid="download-photo" type="button" onclick="downloadSelectedPhoto()" aria-label="save selected photo">&#8681;</button>
                         </div>
+                        <div id="gallery-detail" class="gallery-detail" data-testid="gallery-detail">
+                            <div class="gallery-detail-bar">
+                                <button class="gallery-detail-action" data-testid="gallery-detail-share" type="button" onclick="shareSelectedPhoto()">Share</button>
+                                <button class="gallery-detail-title" data-testid="gallery-detail-title" type="button" onclick="toggleGalleryInfo()">Info</button>
+                                <button class="gallery-detail-action danger" data-testid="gallery-detail-delete" type="button" onclick="deleteSelectedPhoto()">Delete</button>
+                            </div>
+                            <button id="gallery-stage" class="gallery-stage" type="button" onclick="toggleGalleryInfo()" aria-label="photo info"></button>
+                            <div id="gallery-detail-info-panel" class="gallery-info-panel" data-testid="gallery-detail-info-panel"></div>
+                        </div>
                     </section>
 
                     <section id="contacts-view" class="screen-view app-view">
@@ -1523,12 +1636,16 @@
 
                     <section id="camera-view" class="screen-view camera-view">
                         <div class="screen-title" data-testid="screen-title" style="position:absolute;left:-999px;top:auto;">Camera</div>
-                        <video id="camera-feed" class="camera-feed" autoplay playsinline muted></video>
+                        <video id="camera-feed" class="camera-feed" data-testid="camera-feed" autoplay playsinline muted></video>
                         <div id="camera-status" class="camera-status">Requesting camera...</div>
                         <div class="camera-topbar">
-                            <button class="camera-icon-btn" type="button" onclick="leftSoftAction()" aria-label="camera settings">&#9881;</button>
-                            <div class="camera-pill" id="camera-mode-pill">PHOTO</div>
-                            <button class="camera-icon-btn" type="button" onclick="openApp('gallery')" aria-label="open gallery">&#9638;</button>
+                            <button class="camera-icon-btn" type="button" onclick="leftSoftAction()" aria-label="camera settings">
+                                <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M19.4 13.5c.1-.5.1-1 .1-1.5s0-1-.1-1.5l2-1.5-2-3.5-2.4 1a8.1 8.1 0 0 0-2.6-1.5L14 2h-4l-.4 2.5A8.1 8.1 0 0 0 7 6L4.6 5 2.6 8.5l2 1.5c-.1.5-.1 1-.1 1.5s0 1 .1 1.5l-2 1.5 2 3.5 2.4-1a8.1 8.1 0 0 0 2.6 1.5L10 22h4l.4-2.5a8.1 8.1 0 0 0 2.6-1.5l2.4 1 2-3.5-2-1.5ZM12 15.5A3.5 3.5 0 1 1 12 8a3.5 3.5 0 0 1 0 7.5Z"/></svg>
+                            </button>
+                            <button class="camera-pill" id="camera-mode-pill" data-testid="camera-mode-pill" type="button" onclick="toggleCameraMode()">PHOTO</button>
+                            <button class="camera-icon-btn" type="button" onclick="toggleCameraFacing()" aria-label="switch camera">
+                                <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M7 7h8.6l-1.8-1.8L15 4l4 4-4 4-1.2-1.2L15.6 9H7a4 4 0 0 0 0 8h2v2H7A6 6 0 0 1 7 7Zm10 10H8.4l1.8 1.8L9 20l-4-4 4-4 1.2 1.2L8.4 15H17a4 4 0 0 0 0-8h-2V5h2a6 6 0 0 1 0 12Z"/></svg>
+                            </button>
                         </div>
                         <div class="camera-controls">
                             <button class="camera-preview-thumb" type="button" onclick="openApp('gallery')" aria-label="open gallery"></button>
@@ -1546,6 +1663,11 @@
                                 <option value="3">3 sec</option>
                                 <option value="5">5 sec</option>
                             </select>
+                            <div class="camera-settings-row">
+                                <button id="camera-facing-toggle" data-testid="camera-facing-toggle" type="button" onclick="toggleCameraFacing()">Back camera</button>
+                                <button id="camera-video-toggle" data-testid="camera-video-toggle" type="button" onclick="toggleCameraMode()">Photo mode</button>
+                            </div>
+                            <button id="camera-filter-button" data-testid="camera-filter-button" type="button" onclick="cycleCameraFilter(1)">Filter: Natural</button>
                             <button class="list-row selected" type="button" onclick="openCamera()">Back to camera</button>
                         </div>
                     </section>
@@ -1668,6 +1790,14 @@
             soundMuted: "nokia.soundMuted"
         };
 
+        const CAMERA_FILTERS = [
+            { name: "Natural", css: "none", canvas: "none" },
+            { name: "Vivid", css: "saturate(1.55) contrast(1.08)", canvas: "saturate(1.55) contrast(1.08)" },
+            { name: "Warm", css: "sepia(0.22) saturate(1.18)", canvas: "sepia(0.22) saturate(1.18)" },
+            { name: "Mono", css: "grayscale(1) contrast(1.1)", canvas: "grayscale(1) contrast(1.1)" },
+            { name: "Cool", css: "hue-rotate(185deg) saturate(1.12)", canvas: "hue-rotate(185deg) saturate(1.12)" }
+        ];
+
         const defaultSettings = {
             volume: 5,
             ringtone: "Nokia Tune",
@@ -1701,6 +1831,8 @@
             galleryImages: loadJson(STORAGE.galleryImages, []),
             gallerySelectMode: false,
             selectedGalleryIndex: 0,
+            galleryDetailOpen: false,
+            galleryInfoOpen: false,
             musicTracks: loadJson(STORAGE.musicTracks, []),
             activeTrackIndex: -1,
             musicPlaying: false,
@@ -1712,6 +1844,12 @@
             touchEntryMode: null,
             calc: { display: "0", stored: null, operator: null, selectedOperator: "+", fresh: true },
             stream: null,
+            cameraFacingMode: "environment",
+            cameraMode: "photo",
+            cameraFilterIndex: 0,
+            mediaRecorder: null,
+            recordedChunks: [],
+            videoRecording: false,
             powered: true,
             settings: loadJson(STORAGE.settings, defaultSettings),
             callHistory: loadJson(STORAGE.callHistory, [])
@@ -1733,7 +1871,16 @@
         const nowPlaying = document.querySelector("[data-testid='now-playing']");
         const galleryList = document.getElementById("gallery-list");
         const gallerySelect = document.querySelector("[data-testid='gallery-select']");
+        const galleryDetail = document.getElementById("gallery-detail");
+        const galleryStage = document.getElementById("gallery-stage");
+        const galleryDetailTitle = document.querySelector("[data-testid='gallery-detail-title']");
+        const galleryDetailInfoPanel = document.getElementById("gallery-detail-info-panel");
         const cameraPreviewThumb = document.querySelector(".camera-preview-thumb");
+        const cameraModePill = document.getElementById("camera-mode-pill");
+        const cameraShutter = document.querySelector("[data-testid='camera-shutter']");
+        const cameraFacingToggle = document.getElementById("camera-facing-toggle");
+        const cameraVideoToggle = document.getElementById("camera-video-toggle");
+        const cameraFilterButton = document.getElementById("camera-filter-button");
         const calcDisplay = document.querySelector("[data-testid='calculator-display']");
         const musicLibrary = document.getElementById("music-library");
         const musicEmpty = document.getElementById("music-empty");
@@ -1774,6 +1921,7 @@
             renderGallery();
             renderCalculator();
             renderMusic();
+            renderCameraControls();
             renderStatusBar();
             renderSoundState();
             nowPlaying.textContent = state.nowPlaying ? `Now playing: ${state.nowPlaying.title}` : "Now playing: -";
@@ -1896,13 +2044,14 @@
             gallerySelect.textContent = state.gallerySelectMode ? "Done" : "Select";
             galleryList.innerHTML = images.map((image, index) => (
                 `<button class="gallery-tile ${index === state.selectedGalleryIndex ? "selected" : ""}" type="button" onclick="selectGalleryImage(${index})" aria-label="${escapeHtml(image.name)}">
-                    <img src="${image.src}" alt="${escapeHtml(image.name)}">
+                    ${image.type === "video" ? `<video src="${image.src}" muted playsinline></video>` : `<img src="${image.src}" alt="${escapeHtml(image.name)}">`}
                     <span class="gallery-check">&#10003;</span>
                 </button>`
             )).join("") || '<div class="gallery-empty">No photos yet</div>';
 
             const latest = images[0];
             if (latest && cameraPreviewThumb) cameraPreviewThumb.style.backgroundImage = `url("${latest.src}")`;
+            renderGalleryDetail();
         }
 
         function getGalleryImages() {
@@ -1911,10 +2060,12 @@
                     name: "Album art",
                     src: "9yb1x8i34faf1.jpg",
                     dataUrl: null,
+                    type: "image",
                     createdAt: "On phone"
                 },
                 ...state.galleryImages.map((image) => ({
                     ...image,
+                    type: image.type || "image",
                     src: image.dataUrl
                 }))
             ];
@@ -1932,14 +2083,54 @@
 
         function toggleGallerySelect() {
             state.gallerySelectMode = !state.gallerySelectMode;
+            if (state.gallerySelectMode) state.galleryDetailOpen = false;
             renderGallery();
             pulse(state.gallerySelectMode ? "Select" : "Done");
         }
 
         function selectGalleryImage(index) {
             state.selectedGalleryIndex = index;
-            if (!state.gallerySelectMode) state.gallerySelectMode = true;
+            if (state.gallerySelectMode) {
+                renderGallery();
+                return;
+            }
+            openGalleryDetail(index);
+        }
+
+        function openGalleryDetail(index = state.selectedGalleryIndex) {
+            state.selectedGalleryIndex = index;
+            state.gallerySelectMode = false;
+            state.galleryDetailOpen = true;
+            state.galleryInfoOpen = false;
             renderGallery();
+        }
+
+        function closeGalleryDetail() {
+            if (!state.galleryDetailOpen) return false;
+            state.galleryDetailOpen = false;
+            state.galleryInfoOpen = false;
+            renderGallery();
+            pulse("Gallery");
+            return true;
+        }
+
+        function toggleGalleryInfo() {
+            if (!state.galleryDetailOpen) return;
+            state.galleryInfoOpen = !state.galleryInfoOpen;
+            renderGalleryDetail();
+        }
+
+        function renderGalleryDetail() {
+            if (!galleryDetail || !galleryStage) return;
+            const image = getSelectedGalleryImage();
+            galleryDetail.classList.toggle("active", Boolean(state.galleryDetailOpen && image));
+            galleryDetailInfoPanel.classList.toggle("active", state.galleryInfoOpen);
+            if (!state.galleryDetailOpen || !image) return;
+            galleryDetailTitle.textContent = image.type === "video" ? "Video Info" : "Photo Info";
+            galleryStage.innerHTML = image.type === "video"
+                ? `<video src="${image.src}" controls autoplay playsinline></video>`
+                : `<img src="${image.src}" alt="${escapeHtml(image.name)}">`;
+            galleryDetailInfoPanel.innerHTML = `<strong>${escapeHtml(image.name)}</strong><span>${escapeHtml(image.createdAt || "Unknown time")}</span>`;
         }
 
         function getSelectedGalleryImage() {
@@ -2016,7 +2207,11 @@
                 return;
             }
             if (state.mode === "gallery") {
-                toggleGallerySelect();
+                if (state.galleryDetailOpen) {
+                    toggleGalleryInfo();
+                } else {
+                    openGalleryDetail(state.selectedGalleryIndex);
+                }
                 return;
             }
             if (state.mode === "recent") {
@@ -2032,6 +2227,30 @@
         }
 
         function navMove(direction) {
+            if (state.mode === "camera") {
+                if (direction === "left") cycleCameraFilter(-1);
+                if (direction === "right") cycleCameraFilter(1);
+                if (direction === "up") toggleCameraFacing();
+                if (direction === "down") toggleCameraMode();
+                return;
+            }
+
+            if (state.mode === "gallery") {
+                const images = getGalleryImages();
+                if (state.galleryDetailOpen) {
+                    if (direction === "left") state.selectedGalleryIndex = Math.max(0, state.selectedGalleryIndex - 1);
+                    if (direction === "right") state.selectedGalleryIndex = Math.min(images.length - 1, state.selectedGalleryIndex + 1);
+                    renderGallery();
+                    return;
+                }
+                if (direction === "left") state.selectedGalleryIndex = Math.max(0, state.selectedGalleryIndex - 1);
+                if (direction === "right") state.selectedGalleryIndex = Math.min(images.length - 1, state.selectedGalleryIndex + 1);
+                if (direction === "up") state.selectedGalleryIndex = Math.max(0, state.selectedGalleryIndex - 3);
+                if (direction === "down") state.selectedGalleryIndex = Math.min(images.length - 1, state.selectedGalleryIndex + 3);
+                renderGallery();
+                return;
+            }
+
             if (state.mode === "calculator") {
                 const operatorMap = { left: "+", up: "-", right: "*", down: "/" };
                 calcOperator(operatorMap[direction]);
@@ -2175,6 +2394,8 @@
 
         function exitAll() {
             stopCamera();
+            state.galleryDetailOpen = false;
+            state.galleryInfoOpen = false;
             state.mode = "home";
             state.dialNumber = "";
             state.historyStack = [];
@@ -2190,6 +2411,7 @@
         }
 
         function backOneStep() {
+            if (state.mode === "gallery" && closeGalleryDetail()) return;
             stopCamera();
             const previous = state.historyStack.pop() || "home";
             state.mode = previous;
@@ -2424,7 +2646,49 @@
             renderCalculator();
         }
 
+        function getCurrentCameraFilter() {
+            return CAMERA_FILTERS[state.cameraFilterIndex] || CAMERA_FILTERS[0];
+        }
+
+        function renderCameraControls() {
+            const filter = getCurrentCameraFilter();
+            if (cameraFeed) cameraFeed.style.filter = filter.css;
+            if (cameraModePill) cameraModePill.textContent = `${state.cameraMode === "video" ? "VIDEO" : "PHOTO"} · ${filter.name.toUpperCase()}`;
+            if (cameraShutter) {
+                cameraShutter.classList.toggle("video-mode", state.cameraMode === "video");
+                cameraShutter.classList.toggle("recording", state.videoRecording);
+                cameraShutter.setAttribute("aria-label", state.cameraMode === "video" ? (state.videoRecording ? "stop video" : "record video") : "capture photo");
+            }
+            if (cameraFacingToggle) cameraFacingToggle.textContent = state.cameraFacingMode === "user" ? "Front camera" : "Back camera";
+            if (cameraVideoToggle) cameraVideoToggle.textContent = state.cameraMode === "video" ? "Video mode" : "Photo mode";
+            if (cameraFilterButton) cameraFilterButton.textContent = `Filter: ${filter.name}`;
+        }
+
+        function cycleCameraFilter(step) {
+            state.cameraFilterIndex = (state.cameraFilterIndex + step + CAMERA_FILTERS.length) % CAMERA_FILTERS.length;
+            renderCameraControls();
+            pulse(`Filter ${getCurrentCameraFilter().name}`);
+        }
+
+        function toggleCameraMode() {
+            if (state.videoRecording) stopVideoRecording();
+            state.cameraMode = state.cameraMode === "photo" ? "video" : "photo";
+            renderCameraControls();
+            pulse(state.cameraMode === "video" ? "Video mode" : "Photo mode");
+        }
+
+        function toggleCameraFacing() {
+            state.cameraFacingMode = state.cameraFacingMode === "environment" ? "user" : "environment";
+            renderCameraControls();
+            pulse(state.cameraFacingMode === "user" ? "Front camera" : "Back camera");
+            if (state.mode === "camera") openCamera({ push: false });
+        }
+
         async function capturePhoto() {
+            if (state.cameraMode === "video") {
+                toggleVideoRecording();
+                return;
+            }
             const nameInput = document.getElementById("photo-name");
             const delay = Number(document.getElementById("capture-delay").value);
             if (delay > 0) {
@@ -2441,6 +2705,7 @@
             const image = {
                 name,
                 dataUrl,
+                type: "image",
                 createdAt: new Date().toLocaleString("en-GB", { dateStyle: "short", timeStyle: "short" })
             };
             state.galleryImages = [image, ...state.galleryImages].slice(0, 12);
@@ -2462,6 +2727,7 @@
             canvas.width = 240;
             canvas.height = 320;
             const ctx = canvas.getContext("2d");
+            ctx.filter = getCurrentCameraFilter().canvas;
             if (cameraFeed.videoWidth && cameraFeed.videoHeight) {
                 const sourceRatio = cameraFeed.videoWidth / cameraFeed.videoHeight;
                 const targetRatio = canvas.width / canvas.height;
@@ -2500,6 +2766,62 @@
             return canvas.toDataURL("image/png");
         }
 
+        function toggleVideoRecording() {
+            if (state.videoRecording) {
+                stopVideoRecording();
+                return;
+            }
+            startVideoRecording();
+        }
+
+        function startVideoRecording() {
+            if (!state.stream || !window.MediaRecorder) {
+                pulse("Video unavailable");
+                return;
+            }
+            try {
+                state.recordedChunks = [];
+                state.mediaRecorder = new MediaRecorder(state.stream);
+                state.mediaRecorder.ondataavailable = (event) => {
+                    if (event.data && event.data.size) state.recordedChunks.push(event.data);
+                };
+                state.mediaRecorder.onstop = saveRecordedVideo;
+                state.mediaRecorder.start();
+                state.videoRecording = true;
+                renderCameraControls();
+                pulse("Recording");
+            } catch {
+                pulse("Video unavailable");
+            }
+        }
+
+        function stopVideoRecording() {
+            if (!state.mediaRecorder || state.mediaRecorder.state === "inactive") {
+                state.videoRecording = false;
+                renderCameraControls();
+                return;
+            }
+            state.mediaRecorder.stop();
+            state.videoRecording = false;
+            renderCameraControls();
+            pulse("Video saved");
+        }
+
+        function saveRecordedVideo() {
+            if (!state.recordedChunks.length) return;
+            const nameInput = document.getElementById("photo-name");
+            const blob = new Blob(state.recordedChunks, { type: "video/webm" });
+            const video = {
+                name: `${(nameInput.value || "Nokia video").trim()} video`,
+                dataUrl: URL.createObjectURL(blob),
+                type: "video",
+                createdAt: new Date().toLocaleString("en-GB", { dateStyle: "short", timeStyle: "short" })
+            };
+            state.galleryImages = [video, ...state.galleryImages].slice(0, 12);
+            state.selectedGalleryIndex = 1;
+            renderGallery();
+        }
+
         async function shareSelectedPhoto() {
             const image = getSelectedGalleryImage();
             if (!image) {
@@ -2527,9 +2849,9 @@
             }
             const link = document.createElement("a");
             link.href = image.dataUrl || image.src;
-            link.download = `${image.name.replace(/[^a-z0-9_-]+/gi, "-") || "nokia-photo"}.png`;
+            link.download = `${image.name.replace(/[^a-z0-9_-]+/gi, "-") || "nokia-photo"}.${image.type === "video" ? "webm" : "png"}`;
             link.click();
-            pulse("Photo download ready");
+            pulse(`${image.type === "video" ? "Video" : "Photo"} download ready`);
         }
 
         async function shareLatestPhoto() {
@@ -2545,11 +2867,31 @@
         function setSelectedAsWallpaper() {
             const image = getSelectedGalleryImage();
             if (!image) return;
+            if (image.type === "video") {
+                pulse("Wallpaper needs a photo");
+                return;
+            }
             setWallpaper(image.src);
         }
 
-        async function openCamera() {
-            if (state.mode !== "camera" && state.mode !== "recent") state.historyStack.push(state.mode);
+        function deleteSelectedPhoto() {
+            const image = getSelectedGalleryImage();
+            if (!image) return;
+            if (state.selectedGalleryIndex === 0) {
+                pulse("Album art is built in");
+                return;
+            }
+            state.galleryImages.splice(state.selectedGalleryIndex - 1, 1);
+            state.selectedGalleryIndex = Math.max(0, state.selectedGalleryIndex - 1);
+            state.galleryDetailOpen = false;
+            state.galleryInfoOpen = false;
+            saveJson(STORAGE.galleryImages, state.galleryImages);
+            renderGallery();
+            pulse("Deleted");
+        }
+
+        async function openCamera(options = {}) {
+            if (options.push !== false && state.mode !== "camera" && state.mode !== "recent") state.historyStack.push(state.mode);
             rememberRecent("camera");
             state.mode = "camera";
             render();
@@ -2563,10 +2905,14 @@
                 }
 
                 stopCamera();
-                state.stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+                state.stream = await navigator.mediaDevices.getUserMedia({
+                    video: { facingMode: { ideal: state.cameraFacingMode } },
+                    audio: state.cameraMode === "video"
+                });
                 cameraFeed.srcObject = state.stream;
                 cameraFeed.style.display = "block";
                 cameraStatus.style.display = "none";
+                renderCameraControls();
                 pulse("Camera on");
             } catch (error) {
                 cameraStatus.textContent = "Camera blocked or unavailable";
@@ -2575,6 +2921,7 @@
         }
 
         function stopCamera() {
+            if (state.videoRecording) stopVideoRecording();
             if (!state.stream) return;
             state.stream.getTracks().forEach((track) => track.stop());
             state.stream = null;
