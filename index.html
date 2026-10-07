@@ -5,373 +5,771 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Nokia XpressMusic Simulator</title>
     <style>
-        /* --- CSS Reset & Layout --- */
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
         }
 
         body {
-            background-color: #4a0000; /* พื้นหลังสีแดงเข้ม */
-            display: flex;
-            justify-content: center;
-            align-items: center;
             min-height: 100vh;
-            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 18px;
+            background:
+                radial-gradient(circle at 50% 24%, rgba(145, 28, 32, 0.58), transparent 34%),
+                linear-gradient(90deg, #260304, #7a1118 18%, #3d0507 50%, #7a1118 82%, #260304);
+            color: #fff;
         }
 
-        /* --- Phone Body --- */
+        button {
+            font: inherit;
+            color: inherit;
+            cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
+        }
+
         .phone {
-            width: 320px;
-            background-color: #1a1a1a;
-            border-radius: 40px;
-            padding: 15px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.5), inset 0 0 10px rgba(0,0,0,0.8);
-            border: 3px solid #333;
+            width: min(92vw, 338px);
+            min-height: 760px;
             position: relative;
             display: flex;
             flex-direction: column;
             align-items: center;
+            padding: 28px 28px 38px;
+            border: 2px solid #2d2d2d;
+            border-radius: 60px;
+            background:
+                linear-gradient(90deg, #0b0c0c 0%, #2a2b2b 9%, #141515 18%, #101010 50%, #141515 82%, #2b2c2c 91%, #070808 100%);
+            box-shadow:
+                0 28px 45px rgba(0, 0, 0, 0.58),
+                inset 0 0 0 2px #070707,
+                inset 12px 0 24px rgba(255, 255, 255, 0.08),
+                inset -12px 0 20px rgba(0, 0, 0, 0.74);
+            overflow: hidden;
         }
 
-        /* --- Red Side Panels --- */
-        .side-panel {
+        .phone::before {
+            content: "";
             position: absolute;
-            top: 60px;
-            bottom: 120px;
-            width: 20px;
-            background-color: #c00;
-            border-radius: 10px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: space-around;
-            padding: 10px 0;
-            box-shadow: inset -2px 0 5px rgba(0,0,0,0.3);
+            inset: 16px 31px 14px;
+            border-radius: 42px;
+            background:
+                linear-gradient(90deg, rgba(255, 255, 255, 0.14), transparent 22%, transparent 78%, rgba(255, 255, 255, 0.08)),
+                #111;
+            box-shadow: inset 0 0 30px #000;
+            z-index: 0;
         }
-        .side-panel.left { left: -2px; }
-        .side-panel.right { right: -2px; }
 
-        .side-btn {
-            width: 100%;
-            height: 30px;
-            background-color: #e60000;
-            border: 1px solid #a00;
-            border-radius: 3px;
-            color: white;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 12px;
-            cursor: pointer;
-            box-shadow: 0 2px 3px rgba(0,0,0,0.4);
+        .earpiece {
+            position: relative;
+            z-index: 2;
+            width: 72px;
+            height: 10px;
+            margin: 4px 0 26px;
+            border-radius: 999px;
+            background: #030303;
+            box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.28), 0 1px 0 rgba(255, 255, 255, 0.06);
         }
-        .side-btn:active { background-color: #ff3333; }
 
-        /* --- Top Section (Screen Area) --- */
-        .top-section {
+        .side-rail {
+            position: absolute;
+            top: 92px;
+            bottom: 196px;
+            width: 25px;
+            z-index: 1;
+            background: linear-gradient(90deg, #b60716, #ff3147 52%, #a00412);
+            box-shadow: inset 4px 0 10px rgba(255, 255, 255, 0.16), inset -5px 0 12px rgba(0, 0, 0, 0.38);
+        }
+
+        .side-rail.left { left: 0; }
+        .side-rail.right { right: 0; }
+
+        .music-stack {
+            position: absolute;
+            left: 9px;
+            top: 118px;
+            display: grid;
+            gap: 13px;
+            z-index: 3;
+        }
+
+        .side-key {
+            width: 29px;
+            height: 72px;
+            border: 2px solid rgba(77, 0, 6, 0.75);
+            border-radius: 12px;
+            background: linear-gradient(90deg, #b90a18, #ff4055 48%, #b60816);
+            box-shadow: inset 2px 0 6px rgba(255, 255, 255, 0.2), 0 3px 7px rgba(0, 0, 0, 0.48);
+            font-size: 25px;
+            font-weight: 800;
+            line-height: 1;
+            display: grid;
+            place-items: center;
+        }
+
+        .side-key:active,
+        .key:active,
+        .soft-key:active,
+        .call-key:active,
+        .nav-btn:active,
+        .nav-ok:active {
+            transform: translateY(2px);
+            filter: brightness(1.18);
+        }
+
+        .top-face,
+        .control-face,
+        .keypad {
+            position: relative;
+            z-index: 2;
             width: 100%;
-            background-color: #222;
-            border-radius: 20px;
-            padding: 10px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            margin-bottom: 10px;
         }
 
         .brand {
-            width: 100%;
             display: flex;
             justify-content: space-between;
-            color: #888;
-            font-size: 10px;
-            padding: 0 10px;
-            margin-bottom: 5px;
-            font-weight: bold;
+            align-items: center;
+            padding: 0 8px 12px;
+            color: #d7d7d7;
+            text-shadow: 0 1px 3px #000;
         }
 
-        /* --- Screen --- */
+        .brand .nokia {
+            font-size: 20px;
+            font-weight: 800;
+            letter-spacing: 3px;
+        }
+
+        .brand .xm {
+            font-size: 12px;
+            color: #aaa;
+        }
+
+        .screen-shell {
+            padding: 9px;
+            border-radius: 6px;
+            background: #050505;
+            box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.06), 0 7px 18px rgba(0, 0, 0, 0.55);
+        }
+
         .screen {
             width: 100%;
-            height: 200px;
-            background-color: #000;
-            border-radius: 5px;
-            position: relative;
+            aspect-ratio: 3 / 4;
             overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            border: 2px solid #444;
-        }
-
-        /* Screen Content Mockup */
-        .screen-content {
-            flex: 1;
-            background: linear-gradient(135deg, #f0f0f0 0%, #d0d0d0 100%);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            color: #333;
-            text-align: center;
-            font-size: 14px;
-            padding: 10px;
             position: relative;
+            border: 2px solid #141414;
+            border-radius: 4px;
+            background: #050607;
+            box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1);
         }
 
-        .screen-content img {
-            max-width: 80%;
-            max-height: 80%;
-            opacity: 0.8;
-            margin-bottom: 5px;
-        }
-
-        /* LED Feedback Text */
-        .led-feedback {
+        .screen::after {
+            content: "";
             position: absolute;
-            bottom: 5px;
-            left: 0;
-            width: 100%;
-            background: rgba(0, 0, 0, 0.7);
-            color: #0f0;
-            font-size: 12px;
-            padding: 5px;
-            text-align: center;
-            font-family: monospace;
-            transition: opacity 0.3s;
-            opacity: 0;
+            inset: 0;
             pointer-events: none;
-        }
-        .led-feedback.active {
-            opacity: 1;
+            background:
+                linear-gradient(115deg, rgba(255, 255, 255, 0.16), transparent 22%, transparent 67%, rgba(255, 255, 255, 0.08)),
+                repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.035) 0 1px, transparent 1px 3px);
+            mix-blend-mode: screen;
         }
 
-        /* --- Middle Section (Navigation Keys) --- */
-        .middle-section {
-            width: 100%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 10px 0;
-            background-color: #222;
-            border-radius: 0 0 20px 20px;
-            margin-bottom: 10px;
+        .screen-view {
+            min-height: 100%;
             position: relative;
+            display: none;
         }
 
-        /* D-Pad */
-        .d-pad {
-            width: 80px;
-            height: 80px;
-            background-color: #111;
-            border-radius: 50%;
+        .screen-view.active {
             display: flex;
-            justify-content: center;
-            align-items: center;
-            position: relative;
-            box-shadow: inset 0 0 10px #000, 0 2px 5px rgba(0,0,0,0.5);
-            border: 2px solid #333;
         }
-        .d-pad-center {
-            width: 30px;
-            height: 30px;
-            background-color: #333;
-            border-radius: 50%;
-            border: 2px solid #555;
-            cursor: pointer;
-            z-index: 2;
-        }
-        .d-pad-btn {
-            position: absolute;
-            background: transparent;
-            border: none;
-            color: #888;
-            font-size: 14px;
-            cursor: pointer;
-            width: 25px;
-            height: 25px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-        .d-pad-up { top: 5px; left: 27px; }
-        .d-pad-down { bottom: 5px; left: 27px; }
-        .d-pad-left { left: 5px; top: 27px; }
-        .d-pad-right { right: 5px; top: 27px; }
 
-        /* Call Buttons */
-        .call-buttons {
-            position: absolute;
-            width: 100%;
+        .home-view {
+            flex-direction: column;
+            background:
+                radial-gradient(circle at 78% 14%, rgba(130, 18, 29, 0.65), transparent 35%),
+                linear-gradient(130deg, transparent 0 38%, rgba(163, 20, 33, 0.32) 39% 48%, transparent 49%),
+                repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.05) 0 2px, transparent 2px 6px),
+                #050505;
+        }
+
+        .album-card {
+            flex: 0 0 auto;
+            aspect-ratio: 1 / 1;
+            margin: 8px;
+            border-radius: 8px;
+            background: url("9yb1x8i34faf1.jpg") 50% 28% / 214% auto no-repeat;
+            box-shadow: 0 1px 0 rgba(255, 255, 255, 0.4), 0 8px 18px rgba(0, 0, 0, 0.3);
+        }
+
+        .track-info {
+            margin-top: auto;
+            padding: 9px 11px 14px;
+            text-align: center;
+            background: linear-gradient(to bottom, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.9));
+            text-shadow: 0 2px 4px #000;
+        }
+
+        .track-title {
+            font-size: 22px;
+            font-weight: 800;
+        }
+
+        .track-artist {
+            margin-top: 2px;
+            font-size: 16px;
+        }
+
+        .dial-view,
+        .call-view,
+        .menu-view,
+        .camera-view {
+            flex-direction: column;
+            padding: 14px;
+            background:
+                radial-gradient(circle at 50% 18%, rgba(36, 63, 76, 0.9), transparent 44%),
+                linear-gradient(145deg, #15191d, #050607 78%);
+        }
+
+        .screen-title {
+            font-size: 13px;
+            font-weight: 700;
+            color: #dadada;
+            letter-spacing: 0.4px;
+        }
+
+        .dial-number {
+            margin: auto 0;
+            min-height: 58px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            overflow-wrap: anywhere;
+            font-size: 25px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            color: #f2f7ff;
+            text-shadow: 0 0 12px rgba(124, 207, 255, 0.42);
+        }
+
+        .softbar {
             display: flex;
             justify-content: space-between;
-            padding: 0 30px;
-            pointer-events: none; /* Let clicks pass through to buttons */
+            margin-top: auto;
+            font-size: 11px;
+            color: #d4d4d4;
         }
-        .call-btn {
-            width: 35px;
-            height: 20px;
-            border-radius: 10px;
-            border: none;
-            cursor: pointer;
-            pointer-events: auto;
-            box-shadow: 0 2px 3px rgba(0,0,0,0.4);
-        }
-        .call-btn.green { background-color: #0a0; }
-        .call-btn.red { background-color: #a00; }
-        .call-btn:active { transform: scale(0.95); }
 
-        /* --- Keypad --- */
-        .keypad {
-            width: 100%;
+        .call-view {
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            text-align: center;
+        }
+
+        .call-orb {
+            width: 74px;
+            height: 74px;
+            border-radius: 50%;
+            display: grid;
+            place-items: center;
+            background: radial-gradient(circle, #1dd270, #075e2d);
+            box-shadow: 0 0 24px rgba(40, 224, 122, 0.35);
+            font-size: 35px;
+        }
+
+        .call-number {
+            font-size: 23px;
+            font-weight: 800;
+            overflow-wrap: anywhere;
+        }
+
+        .call-note {
+            max-width: 170px;
+            color: #b9c4ca;
+            font-size: 12px;
+        }
+
+        .menu-grid {
+            margin-top: 18px;
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 5px;
-            padding: 5px;
-            background-color: #222;
-            border-radius: 15px;
+            gap: 11px;
+        }
+
+        .menu-item {
+            min-height: 58px;
+            border-radius: 8px;
+            display: grid;
+            place-items: center;
+            padding: 6px 4px;
+            text-align: center;
+            font-size: 10px;
+            background: linear-gradient(#384048, #121519);
+            box-shadow: inset 0 1px rgba(255, 255, 255, 0.18), 0 5px 8px rgba(0, 0, 0, 0.36);
+        }
+
+        .menu-icon {
+            display: block;
+            font-size: 20px;
+            margin-bottom: 2px;
+        }
+
+        .camera-view {
+            padding: 0;
+            background: #070707;
+        }
+
+        .camera-feed {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: none;
+            background: #000;
+        }
+
+        .camera-status {
+            position: absolute;
+            inset: 0;
+            display: grid;
+            place-items: center;
+            padding: 20px;
+            text-align: center;
+            color: #dfe8ee;
+            background:
+                linear-gradient(90deg, rgba(255, 255, 255, 0.06) 1px, transparent 1px),
+                linear-gradient(rgba(255, 255, 255, 0.06) 1px, transparent 1px),
+                #111;
+            background-size: 32px 32px;
+        }
+
+        .feedback {
+            position: absolute;
+            left: 8px;
+            right: 8px;
+            bottom: 8px;
+            z-index: 5;
+            padding: 6px 8px;
+            border-radius: 8px;
+            background: rgba(0, 0, 0, 0.72);
+            color: #9cffb5;
+            font: 11px Consolas, monospace;
+            text-align: center;
+            opacity: 0;
+            transform: translateY(6px);
+            transition: opacity 0.18s ease, transform 0.18s ease;
+            pointer-events: none;
+        }
+
+        .feedback.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .control-face {
+            margin-top: 10px;
+        }
+
+        .soft-row {
+            height: 55px;
+            display: grid;
+            grid-template-columns: 1fr 74px 1fr;
+            align-items: center;
+            gap: 6px;
+            background: linear-gradient(#333, #090909 58%, #181818);
+            border-radius: 3px 3px 0 0;
+            padding: 8px 12px 0;
+            box-shadow: inset 0 1px rgba(255, 255, 255, 0.16);
+        }
+
+        .soft-key {
+            height: 12px;
+            border: 0;
+            border-radius: 999px;
+            background: linear-gradient(#f8f8f8, #8c8c8c 45%, #191919);
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.55);
+        }
+
+        .nav-row {
+            height: 70px;
+            display: grid;
+            grid-template-columns: 1fr 88px 1fr;
+            align-items: stretch;
+            background: linear-gradient(#222, #050505 58%, #222);
+            box-shadow: inset 0 1px rgba(255, 255, 255, 0.14);
+        }
+
+        .call-key {
+            align-self: center;
+            justify-self: center;
+            width: 58px;
+            height: 12px;
+            border: 0;
+            border-radius: 999px;
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.5), inset 0 1px rgba(255, 255, 255, 0.2);
+        }
+
+        .call-key.green {
+            background: linear-gradient(#22db81, #08743c);
+        }
+
+        .call-key.red {
+            background: linear-gradient(#f34337, #8c130e);
+        }
+
+        .nav-cluster {
+            position: relative;
+            align-self: center;
+            justify-self: center;
+            width: 84px;
+            height: 84px;
+            margin-top: -42px;
+            border-radius: 24px;
+            background: linear-gradient(145deg, #2b2b2b, #050505 70%);
+            box-shadow: 0 8px 14px rgba(0, 0, 0, 0.62), inset 0 2px rgba(255, 255, 255, 0.12);
+        }
+
+        .nav-btn,
+        .nav-ok {
+            position: absolute;
+            border: 0;
+            background: transparent;
+        }
+
+        .nav-btn {
+            color: #c7c7c7;
+            font-size: 18px;
+            width: 30px;
+            height: 24px;
+        }
+
+        .nav-up { top: 5px; left: 27px; }
+        .nav-down { bottom: 5px; left: 27px; }
+        .nav-left { left: 5px; top: 30px; }
+        .nav-right { right: 5px; top: 30px; }
+
+        .nav-ok {
+            inset: 22px;
+            border-radius: 12px;
+            background: linear-gradient(145deg, #4b4b4b, #171717);
+            box-shadow: inset 0 1px 4px rgba(255, 255, 255, 0.32), 0 0 0 2px #0a0a0a;
+        }
+
+        .keypad {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2px;
+            margin-top: 0;
+            padding: 0 6px 8px;
+            border-radius: 0 0 26px 26px;
+            background: #050505;
+            overflow: hidden;
         }
 
         .key {
-            background-color: #333;
-            border: 1px solid #444;
-            border-radius: 5px;
-            color: #fff;
-            padding: 10px 0;
+            height: 58px;
+            border: 0;
+            border-left: 1px solid #050505;
+            border-right: 1px solid #050505;
+            border-radius: 2px 2px 10px 10px;
+            color: #eee;
+            background:
+                linear-gradient(to bottom, rgba(255, 255, 255, 0.38), rgba(255, 255, 255, 0.08) 18%, rgba(0, 0, 0, 0.08) 38%, rgba(0, 0, 0, 0.72) 100%),
+                #1e1f20;
+            box-shadow: inset 0 1px rgba(255, 255, 255, 0.24), inset 0 -10px 16px rgba(0, 0, 0, 0.72);
             display: flex;
-            flex-direction: column;
-            justify-content: center;
             align-items: center;
-            cursor: pointer;
-            box-shadow: 0 3px 0 #111, 0 4px 5px rgba(0,0,0,0.5);
-            transition: all 0.1s ease;
+            justify-content: center;
+            gap: 9px;
             user-select: none;
-            font-size: 16px;
-            font-weight: bold;
-        }
-        .key:active {
-            transform: translateY(3px);
-            box-shadow: 0 0 0 #111, 0 1px 2px rgba(0,0,0,0.5);
-            background-color: #444;
-        }
-        
-        .key-sub {
-            font-size: 8px;
-            color: #888;
-            font-weight: normal;
-            letter-spacing: 1px;
-            margin-top: 2px;
         }
 
-        /* Specific Key Colors */
-        .key-green { color: #0f0; }
-        .key-red { color: #f00; }
-        
-        /* Bottom row keys (special) */
-        .key-special {
-            background-color: #222;
-            border: 1px solid #333;
-            box-shadow: 0 3px 0 #000, 0 4px 5px rgba(0,0,0,0.5);
-            font-size: 14px;
-            color: #ccc;
+        .key-main {
+            font-size: 26px;
+            line-height: 1;
+            font-weight: 400;
+            text-shadow: 0 2px 3px #000;
         }
-        .key-special:active {
-            transform: translateY(3px);
-            box-shadow: 0 0 0 #000, 0 1px 2px rgba(0,0,0,0.5);
+
+        .key-sub {
+            font-size: 13px;
+            color: #e4e4e4;
+            text-shadow: 0 2px 3px #000;
+        }
+
+        @media (max-height: 820px) {
+            body { align-items: flex-start; }
+            .phone {
+                min-height: auto;
+                transform: scale(0.92);
+                transform-origin: top center;
+            }
         }
     </style>
 </head>
 <body>
-
-    <div class="phone">
-        <!-- Side Panels (Red) -->
-        <div class="side-panel left">
-            <div class="side-btn" onclick="pressKey('Vol Up')">+</div>
-            <div class="side-btn" onclick="pressKey('Vol Down')">-</div>
-        </div>
-        <div class="side-panel right">
-            <!-- Right side could have a camera button or similar -->
-            <div class="side-btn" onclick="pressKey('Camera')" style="font-size:10px;">📷</div>
+    <main class="phone" aria-label="Nokia XpressMusic simulator">
+        <div class="side-rail left"></div>
+        <div class="side-rail right"></div>
+        <div class="music-stack" aria-label="Music side controls">
+            <button class="side-key" type="button" onclick="pressKey('Previous')">|&#9664;</button>
+            <button class="side-key" type="button" onclick="pressKey('Play / Pause')">&#9654;||</button>
+            <button class="side-key" type="button" onclick="pressKey('Next')">&#9654;|</button>
         </div>
 
-        <!-- Top Section -->
-        <div class="top-section">
+        <div class="earpiece"></div>
+
+        <section class="top-face">
             <div class="brand">
-                <span>NOKIA</span>
-                <span>XpressMusic</span>
+                <span class="nokia">NOKIA</span>
+                <span class="xm">XpressMusic</span>
             </div>
-            
-            <div class="screen">
-                <div class="screen-content">
-                    <!-- Simulated Album Art / Wallpaper -->
-                    <div style="font-weight: bold; color: #c00; font-size: 20px;">CUTE</div>
-                    <div style="font-size: 10px; color: #666;">IS WHAT WE AIM FOR</div>
-                    <div style="font-size: 12px; margin-top: 10px; color: #333;">Risque</div>
-                    
-                    <!-- LED Feedback (Green text) -->
-                    <div id="led-feedback" class="led-feedback">Ready...</div>
+
+            <div class="screen-shell">
+                <div class="screen" aria-live="polite">
+                    <section id="home-view" class="screen-view home-view active">
+                        <div class="album-card" aria-hidden="true"></div>
+                        <div class="track-info">
+                            <div class="track-title">Risque</div>
+                            <div class="track-artist">Cute Is What We Aim For</div>
+                        </div>
+                    </section>
+
+                    <section id="dial-view" class="screen-view dial-view">
+                        <div class="screen-title" data-testid="screen-title">Dial</div>
+                        <div class="dial-number" data-testid="dial-number"></div>
+                        <div class="softbar"><span>Options</span><span>Clear</span></div>
+                    </section>
+
+                    <section id="call-view" class="screen-view call-view">
+                        <div class="screen-title" data-testid="screen-title">Calling</div>
+                        <div class="call-orb" aria-hidden="true">&#9742;</div>
+                        <div class="call-number" data-testid="call-number"></div>
+                        <div class="call-note">Demo only. No real call is placed.</div>
+                    </section>
+
+                    <section id="menu-view" class="screen-view menu-view">
+                        <div class="screen-title" data-testid="screen-title">Menu</div>
+                        <div class="menu-grid" aria-label="Nokia style menu">
+                            <div class="menu-item"><span><span class="menu-icon">&#9835;</span>Music</span></div>
+                            <div class="menu-item"><span><span class="menu-icon">&#9742;</span>Contacts</span></div>
+                            <div class="menu-item"><span><span class="menu-icon">&#9993;</span>Messages</span></div>
+                            <div class="menu-item"><span><span class="menu-icon">&#128247;</span>Camera</span></div>
+                            <div class="menu-item"><span><span class="menu-icon">&#128197;</span>Calendar</span></div>
+                            <div class="menu-item"><span><span class="menu-icon">&#9881;</span>Settings</span></div>
+                        </div>
+                        <div class="softbar"><span>Select</span><span>Back</span></div>
+                    </section>
+
+                    <section id="camera-view" class="screen-view camera-view">
+                        <div class="screen-title" data-testid="screen-title" style="position:absolute;left:12px;top:10px;z-index:2;">Camera</div>
+                        <video id="camera-feed" class="camera-feed" autoplay playsinline muted></video>
+                        <div id="camera-status" class="camera-status">Requesting camera...</div>
+                    </section>
+
+                    <div id="feedback" class="feedback">Ready</div>
                 </div>
             </div>
-        </div>
+        </section>
 
-        <!-- Middle Section (Navigation & Call Buttons) -->
-        <div class="middle-section">
-            <div class="call-buttons">
-                <button class="call-btn green" onclick="pressKey('Call / Green')"></button>
-                <button class="call-btn red" onclick="pressKey('End / Red')"></button>
+        <section class="control-face" aria-label="Hardware controls">
+            <div class="soft-row">
+                <button class="soft-key" type="button" onclick="showMode('menu')" aria-label="left soft key menu"></button>
+                <span></span>
+                <button class="soft-key" type="button" onclick="backHome()" aria-label="right soft key back"></button>
             </div>
 
-            <div class="d-pad">
-                <button class="d-pad-btn d-pad-up" onclick="pressKey('Up')">▲</button>
-                <button class="d-pad-btn d-pad-down" onclick="pressKey('Down')">▼</button>
-                <button class="d-pad-btn d-pad-left" onclick="pressKey('Left')">◀</button>
-                <button class="d-pad-btn d-pad-right" onclick="pressKey('Right')">▶</button>
-                <div class="d-pad-center" onclick="pressKey('Center / OK')"></div>
+            <div class="nav-row">
+                <button class="call-key green" type="button" onclick="startCall()" aria-label="call"></button>
+                <div class="nav-cluster">
+                    <button class="nav-btn nav-up" type="button" onclick="pressKey('Up')" aria-label="up">&#9650;</button>
+                    <button class="nav-btn nav-down" type="button" onclick="pressKey('Down')" aria-label="down">&#9660;</button>
+                    <button class="nav-btn nav-left" type="button" onclick="pressKey('Left')" aria-label="left">&#9664;</button>
+                    <button class="nav-btn nav-right" type="button" onclick="pressKey('Right')" aria-label="right">&#9654;</button>
+                    <button class="nav-ok" data-testid="nav-ok" type="button" onclick="showMode('menu')" aria-label="center ok"></button>
+                </div>
+                <button class="call-key red" type="button" onclick="endCall()" aria-label="end call"></button>
             </div>
-        </div>
+        </section>
 
-        <!-- Keypad -->
-        <div class="keypad">
-            <!-- Row 1 -->
-            <div class="key" onclick="pressKey('1')">1 <span class="key-sub">∞</span></div>
-            <div class="key" onclick="pressKey('2')">2 <span class="key-sub">ABC</span></div>
-            <div class="key" onclick="pressKey('3')">3 <span class="key-sub">DEF</span></div>
-            <!-- Row 2 -->
-            <div class="key" onclick="pressKey('4')">4 <span class="key-sub">GHI</span></div>
-            <div class="key" onclick="pressKey('5')">5 <span class="key-sub">JKL</span></div>
-            <div class="key" onclick="pressKey('6')">6 <span class="key-sub">MNO</span></div>
-            <!-- Row 3 -->
-            <div class="key" onclick="pressKey('7')">7 <span class="key-sub">PQRS</span></div>
-            <div class="key" onclick="pressKey('8')">8 <span class="key-sub">TUV</span></div>
-            <div class="key" onclick="pressKey('9')">9 <span class="key-sub">WXYZ</span></div>
-            <!-- Row 4 -->
-            <div class="key key-special" onclick="pressKey('*')">* <span class="key-sub">+</span></div>
-            <div class="key key-special" onclick="pressKey('0')">0 <span class="key-sub">Space</span></div>
-            <div class="key key-special" onclick="pressKey('#')"># <span class="key-sub">Shift</span></div>
-        </div>
-    </div>
+        <section class="keypad" aria-label="Numeric keypad">
+            <button class="key" type="button" data-key="1" onclick="pressDigit('1')"><span class="key-main">1</span><span class="key-sub">&#8734;</span></button>
+            <button class="key" type="button" data-key="2" onclick="pressDigit('2')"><span class="key-main">2</span><span class="key-sub">ABC</span></button>
+            <button class="key" type="button" data-key="3" onclick="pressDigit('3')"><span class="key-main">3</span><span class="key-sub">DEF</span></button>
+            <button class="key" type="button" data-key="4" onclick="pressDigit('4')"><span class="key-main">4</span><span class="key-sub">GHI</span></button>
+            <button class="key" type="button" data-key="5" onclick="pressDigit('5')"><span class="key-main">5</span><span class="key-sub">JKL</span></button>
+            <button class="key" type="button" data-key="6" onclick="pressDigit('6')"><span class="key-main">6</span><span class="key-sub">MNO</span></button>
+            <button class="key" type="button" data-key="7" onclick="pressDigit('7')"><span class="key-main">7</span><span class="key-sub">PQRS</span></button>
+            <button class="key" type="button" data-key="8" onclick="pressDigit('8')"><span class="key-main">8</span><span class="key-sub">TUV</span></button>
+            <button class="key" type="button" data-key="9" onclick="pressDigit('9')"><span class="key-main">9</span><span class="key-sub">WXYZ</span></button>
+            <button class="key" type="button" data-key="*" onclick="pressDigit('*')"><span class="key-main">*</span><span class="key-sub">+</span></button>
+            <button class="key" type="button" data-key="0" onclick="pressDigit('0')"><span class="key-main">0</span><span class="key-sub">&#8635;</span></button>
+            <button class="key" type="button" data-key="#" onclick="pressDigit('#')"><span class="key-main">#</span><span class="key-sub">&#9834;</span></button>
+        </section>
+
+        <button class="side-key" data-testid="camera-button" type="button" onclick="openCamera()" aria-label="camera" style="position:absolute;right:8px;top:315px;height:54px;z-index:4;">&#128247;</button>
+    </main>
 
     <script>
-        // ฟังก์ชันสำหรับการกดปุ่มและการแสดงผล LED
-        function pressKey(keyName) {
-            const feedbackEl = document.getElementById('led-feedback');
-            
-            // อัปเดตข้อความบนหน้าจอ LED
-            feedbackEl.textContent = `กดปุ่ม: ${keyName}`;
-            feedbackEl.classList.add('active');
+        const state = {
+            mode: "home",
+            dialNumber: "",
+            stream: null
+        };
 
-            // ลบ Effect หลังจาก 1.5 วินาที
-            clearTimeout(window.ledTimeout); // เคลียร์ Timeout เก่าถ้ามีการกดรัวๆ
-            window.ledTimeout = setTimeout(() => {
-                feedbackEl.classList.remove('active');
-            }, 1500);
+        const views = {
+            home: document.getElementById("home-view"),
+            dial: document.getElementById("dial-view"),
+            call: document.getElementById("call-view"),
+            menu: document.getElementById("menu-view"),
+            camera: document.getElementById("camera-view")
+        };
 
-            // เพิ่ม Effect เสียง (ทางเลือก) - ถ้าต้องการให้มีเสียงคลิกสามารถเปิดใช้งานได้
-            // const audio = new Audio('click.mp3'); // ต้องมีไฟล์เสียง
-            // audio.play().catch(e => console.log("Audio play blocked"));
+        const feedback = document.getElementById("feedback");
+        const dialNumber = document.querySelector("[data-testid='dial-number']");
+        const callNumber = document.querySelector("[data-testid='call-number']");
+        const cameraFeed = document.getElementById("camera-feed");
+        const cameraStatus = document.getElementById("camera-status");
+
+        function render() {
+            Object.entries(views).forEach(([name, element]) => {
+                element.classList.toggle("active", name === state.mode);
+            });
+
+            dialNumber.textContent = state.dialNumber || "";
+            callNumber.textContent = state.dialNumber || "Unknown";
         }
+
+        function showMode(mode) {
+            state.mode = mode;
+            render();
+            pulse(mode.charAt(0).toUpperCase() + mode.slice(1));
+        }
+
+        function pressDigit(digit) {
+            stopCamera();
+            state.dialNumber += digit;
+            state.mode = "dial";
+            render();
+            pulse("Key " + digit);
+        }
+
+        function startCall() {
+            stopCamera();
+            if (!state.dialNumber) {
+                state.mode = "dial";
+                render();
+                pulse("Enter number first");
+                return;
+            }
+            state.mode = "call";
+            render();
+            pulse("Calling " + state.dialNumber);
+        }
+
+        function endCall() {
+            stopCamera();
+            state.mode = "home";
+            state.dialNumber = "";
+            render();
+            pulse("Call ended");
+        }
+
+        function backHome() {
+            stopCamera();
+            state.mode = "home";
+            render();
+            pulse("Back");
+        }
+
+        function pressKey(name) {
+            pulse(name);
+        }
+
+        async function openCamera() {
+            state.mode = "camera";
+            render();
+            cameraStatus.style.display = "grid";
+            cameraFeed.style.display = "none";
+            cameraStatus.textContent = "Requesting camera...";
+
+            try {
+                if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                    throw new Error("Camera API is not available in this browser.");
+                }
+
+                stopCamera();
+                state.stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+                cameraFeed.srcObject = state.stream;
+                cameraFeed.style.display = "block";
+                cameraStatus.style.display = "none";
+                pulse("Camera on");
+            } catch (error) {
+                cameraStatus.textContent = "Camera blocked or unavailable";
+                pulse(error.message || "Camera unavailable");
+            }
+        }
+
+        function stopCamera() {
+            if (!state.stream) return;
+            state.stream.getTracks().forEach((track) => track.stop());
+            state.stream = null;
+            cameraFeed.srcObject = null;
+        }
+
+        function pulse(message) {
+            feedback.textContent = message;
+            feedback.classList.add("active");
+            clearTimeout(window.feedbackTimeout);
+            window.feedbackTimeout = setTimeout(() => {
+                feedback.classList.remove("active");
+            }, 1100);
+        }
+
+        document.addEventListener("keydown", (event) => {
+            if (/^[0-9*#]$/.test(event.key)) {
+                event.preventDefault();
+                pressDigit(event.key);
+                return;
+            }
+
+            if (event.key === "Enter") {
+                event.preventDefault();
+                if (state.mode === "menu") {
+                    showMode("home");
+                } else {
+                    startCall();
+                }
+                return;
+            }
+
+            if (event.key === "Escape") {
+                event.preventDefault();
+                if (state.mode === "call") {
+                    endCall();
+                } else {
+                    backHome();
+                }
+                return;
+            }
+
+            if (event.key.toLowerCase() === "m") {
+                event.preventDefault();
+                showMode("menu");
+                return;
+            }
+
+            if (event.key.toLowerCase() === "c") {
+                event.preventDefault();
+                openCamera();
+            }
+        });
+
+        render();
     </script>
 </body>
 </html>
