@@ -531,6 +531,47 @@
             box-shadow: inset 0 0 0 1px rgba(255,255,255,.2), 0 8px 16px rgba(0,0,0,.35);
         }
 
+        .calc-ops {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 6px;
+            margin-top: 12px;
+        }
+
+        .calc-op {
+            border: 0;
+            border-radius: 6px;
+            padding: 8px 0;
+            color: #fff;
+            background: linear-gradient(#58616a, #15191e);
+            box-shadow: inset 0 1px rgba(255, 255, 255, 0.18);
+            font-weight: 800;
+        }
+
+        .camera-controls {
+            position: absolute;
+            left: 8px;
+            right: 8px;
+            bottom: 8px;
+            z-index: 3;
+            display: grid;
+            gap: 6px;
+            padding: 8px;
+            border-radius: 8px;
+            background: rgba(0, 0, 0, 0.62);
+        }
+
+        .camera-controls input,
+        .camera-controls select {
+            width: 100%;
+            border: 1px solid rgba(255,255,255,.24);
+            border-radius: 5px;
+            padding: 5px 6px;
+            color: #fff;
+            background: #111820;
+            font-size: 11px;
+        }
+
         .metric {
             margin-top: 12px;
             display: grid;
@@ -830,7 +871,10 @@
                         <div class="screen-title" data-testid="screen-title">Gallery</div>
                         <div class="gallery-preview" aria-label="Cute Is What We Aim For album image"></div>
                         <button class="list-row" type="button" onclick="setWallpaper('9yb1x8i34faf1.jpg')">Set wallpaper</button>
-                        <div class="tiny-copy">Images on phone: 9yb1x8i34faf1.jpg</div>
+                        <div id="gallery-list" class="list" data-testid="gallery-list"></div>
+                        <button class="list-row" data-testid="share-photo" type="button" onclick="shareLatestPhoto()">Share latest photo</button>
+                        <button class="list-row" data-testid="download-photo" type="button" onclick="downloadLatestPhoto()">Save / download latest photo</button>
+                        <div class="tiny-copy">Images on phone: album art plus captured Nokia photos.</div>
                     </section>
 
                     <section id="contacts-view" class="screen-view app-view">
@@ -861,8 +905,15 @@
 
                     <section id="calculator-view" class="screen-view app-view">
                         <div class="screen-title" data-testid="screen-title">Calculator</div>
-                        <div class="dial-number">0</div>
-                        <div class="tiny-copy">Mini calculator shell. Number keys are already wired.</div>
+                        <div class="dial-number" data-testid="calculator-display">0</div>
+                        <div class="calc-ops" aria-label="calculator operators">
+                            <button class="calc-op" data-testid="calc-plus" type="button" onclick="calcOperator('+')">+</button>
+                            <button class="calc-op" data-testid="calc-minus" type="button" onclick="calcOperator('-')">-</button>
+                            <button class="calc-op" data-testid="calc-times" type="button" onclick="calcOperator('*')">×</button>
+                            <button class="calc-op" data-testid="calc-divide" type="button" onclick="calcOperator('/')">/</button>
+                            <button class="calc-op" data-testid="calc-equals" type="button" onclick="calcEquals()">=</button>
+                        </div>
+                        <div class="tiny-copy">Use the phone keypad for numbers.</div>
                     </section>
 
                     <section id="alarm-view" class="screen-view app-view">
@@ -897,6 +948,25 @@
                         <div class="screen-title" data-testid="screen-title" style="position:absolute;left:12px;top:10px;z-index:2;">Camera</div>
                         <video id="camera-feed" class="camera-feed" autoplay playsinline muted></video>
                         <div id="camera-status" class="camera-status">Requesting camera...</div>
+                        <div class="camera-controls">
+                            <input id="photo-name" aria-label="photo name" placeholder="Photo name" value="Nokia photo">
+                            <select id="capture-delay" data-testid="capture-delay" aria-label="capture delay">
+                                <option value="0">No timer</option>
+                                <option value="3">3 sec</option>
+                                <option value="5">5 sec</option>
+                            </select>
+                            <div class="tiny-copy">Center key captures. Left soft opens camera settings.</div>
+                        </div>
+                    </section>
+
+                    <section id="cameraSettings-view" class="screen-view app-view">
+                        <div class="screen-title" data-testid="screen-title">Camera Settings</div>
+                        <div class="list">
+                            <button class="list-row selected" type="button">Timer: off / 3 sec / 5 sec</button>
+                            <button class="list-row" type="button">File name: editable before capture</button>
+                            <button class="list-row" type="button">Save to: Nokia Gallery</button>
+                            <button class="list-row" type="button">Share: Web Share if supported, download fallback</button>
+                        </div>
                     </section>
 
                     <div id="feedback" class="feedback">Ready</div>
@@ -908,7 +978,7 @@
             <div class="soft-row">
                 <div class="soft-slot">
                     <span class="soft-name" data-testid="left-top-name">ซ้ายบน</span>
-                    <button class="soft-key" data-testid="left-soft" type="button" onclick="showMode('menu')" aria-label="left soft key menu"></button>
+                    <button class="soft-key" data-testid="left-soft" type="button" onclick="leftSoftAction()" aria-label="left soft key menu"></button>
                     <span class="soft-name" data-testid="left-bottom-name">ซ้ายล่าง</span>
                 </div>
                 <span></span>
@@ -965,7 +1035,8 @@
         const STORAGE = {
             callHistory: "nokia.callHistory",
             wallpaper: "nokia.wallpaper",
-            settings: "nokia.settings"
+            settings: "nokia.settings",
+            galleryImages: "nokia.galleryImages"
         };
 
         const defaultSettings = {
@@ -998,6 +1069,8 @@
             rightHoldTimer: null,
             suppressRightClick: false,
             nowPlaying: null,
+            galleryImages: loadJson(STORAGE.galleryImages, []),
+            calc: { display: "0", stored: null, operator: null, fresh: true },
             stream: null,
             powered: true,
             settings: loadJson(STORAGE.settings, defaultSettings),
@@ -1018,6 +1091,8 @@
         const callHistoryList = document.getElementById("call-history-list");
         const recentList = document.getElementById("recent-list");
         const nowPlaying = document.querySelector("[data-testid='now-playing']");
+        const galleryList = document.getElementById("gallery-list");
+        const calcDisplay = document.querySelector("[data-testid='calculator-display']");
 
         function loadJson(key, fallback) {
             try {
@@ -1043,6 +1118,8 @@
             renderMenuSelection();
             renderCallHistory();
             renderRecentApps();
+            renderGallery();
+            renderCalculator();
             renderStatusBar();
             nowPlaying.textContent = state.nowPlaying ? `Now playing: ${state.nowPlaying.title}` : "Now playing: -";
         }
@@ -1082,6 +1159,19 @@
             )).join("");
         }
 
+        function renderGallery() {
+            if (!galleryList) return;
+            const captured = state.galleryImages.map((image, index) => (
+                `<button class="list-row ${index === 0 ? "selected" : ""}" type="button">${image.name}<br><small>${image.createdAt}</small></button>`
+            )).join("");
+            galleryList.innerHTML = captured || '<div class="list-row selected">No captured photos yet</div>';
+        }
+
+        function renderCalculator() {
+            if (!calcDisplay) return;
+            calcDisplay.textContent = state.calc.display;
+        }
+
         function rememberRecent(mode) {
             if (!APPS.includes(mode)) return;
             state.recentApps = [mode, ...state.recentApps.filter((app) => app !== mode)].slice(0, 6);
@@ -1110,6 +1200,10 @@
         window.openAppForTest = openApp;
 
         function navSelect() {
+            if (state.mode === "camera") {
+                capturePhoto();
+                return;
+            }
             if (state.mode === "recent") {
                 const app = state.recentApps[state.recentIndex];
                 if (app) openApp(app);
@@ -1159,6 +1253,10 @@
         }
 
         function pressDigit(digit) {
+            if (state.mode === "calculator" && /^[0-9]$/.test(digit)) {
+                calcDigit(digit);
+                return;
+            }
             stopCamera();
             state.dialNumber += digit;
             state.mode = "dial";
@@ -1240,6 +1338,14 @@
             pulse(name);
         }
 
+        function leftSoftAction() {
+            if (state.mode === "camera") {
+                showMode("cameraSettings");
+                return;
+            }
+            showMode("menu");
+        }
+
         function changeVolume(delta) {
             state.settings.volume = Math.max(0, Math.min(10, state.settings.volume + delta));
             saveJson(STORAGE.settings, state.settings);
@@ -1258,6 +1364,121 @@
             state.nowPlaying = { title, artist };
             showMode("home", { recent: false });
             pulse("Playing " + title);
+        }
+
+        function calcDigit(digit) {
+            if (state.calc.fresh || state.calc.display === "0") {
+                state.calc.display = digit;
+                state.calc.fresh = false;
+            } else {
+                state.calc.display += digit;
+            }
+            renderCalculator();
+        }
+
+        function calcOperator(operator) {
+            if (state.calc.operator && !state.calc.fresh) calcEquals();
+            state.calc.stored = Number(state.calc.display);
+            state.calc.operator = operator;
+            state.calc.fresh = true;
+        }
+
+        function calcEquals() {
+            if (!state.calc.operator || state.calc.stored === null) return;
+            const current = Number(state.calc.display);
+            const operations = {
+                "+": (a, b) => a + b,
+                "-": (a, b) => a - b,
+                "*": (a, b) => a * b,
+                "/": (a, b) => b === 0 ? NaN : a / b
+            };
+            const result = operations[state.calc.operator](state.calc.stored, current);
+            state.calc.display = Number.isFinite(result) ? String(Number(result.toFixed(8))) : "Error";
+            state.calc.operator = null;
+            state.calc.stored = null;
+            state.calc.fresh = true;
+            renderCalculator();
+        }
+
+        async function capturePhoto() {
+            const nameInput = document.getElementById("photo-name");
+            const delay = Number(document.getElementById("capture-delay").value);
+            if (delay > 0) {
+                cameraStatus.style.display = "grid";
+                for (let count = delay; count > 0; count -= 1) {
+                    cameraStatus.textContent = `Capturing in ${count}...`;
+                    await new Promise((resolve) => setTimeout(resolve, 1000));
+                }
+            }
+
+            const name = (nameInput.value || "Nokia photo").trim();
+            const dataUrl = makePhotoDataUrl(name);
+            const image = {
+                name,
+                dataUrl,
+                createdAt: new Date().toLocaleString("en-GB", { dateStyle: "short", timeStyle: "short" })
+            };
+            state.galleryImages = [image, ...state.galleryImages].slice(0, 12);
+            saveJson(STORAGE.galleryImages, state.galleryImages);
+            cameraStatus.style.display = "grid";
+            cameraStatus.textContent = `Saved ${name} to Nokia Gallery`;
+            renderGallery();
+            pulse("Photo saved");
+        }
+
+        function makePhotoDataUrl(name) {
+            const canvas = document.createElement("canvas");
+            canvas.width = 240;
+            canvas.height = 320;
+            const ctx = canvas.getContext("2d");
+            ctx.fillStyle = "#111820";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = "#273847";
+            ctx.fillRect(12, 12, 216, 296);
+            ctx.fillStyle = "#eaf9ff";
+            ctx.font = "bold 20px Segoe UI";
+            ctx.fillText("NOKIA", 22, 42);
+            ctx.font = "14px Segoe UI";
+            ctx.fillText(name, 22, 292);
+            ctx.strokeStyle = "#ffffff";
+            ctx.lineWidth = 4;
+            ctx.strokeRect(74, 112, 92, 64);
+            ctx.beginPath();
+            ctx.arc(120, 144, 22, 0, Math.PI * 2);
+            ctx.stroke();
+            return canvas.toDataURL("image/png");
+        }
+
+        async function shareLatestPhoto() {
+            const image = state.galleryImages[0];
+            if (!image) {
+                pulse("No photo to share");
+                return;
+            }
+            if (navigator.share) {
+                try {
+                    await navigator.share({ title: image.name, text: `${image.name} from Nokia Gallery`, url: location.href });
+                    pulse("Share opened");
+                    return;
+                } catch {
+                    pulse("Share cancelled");
+                    return;
+                }
+            }
+            downloadLatestPhoto();
+        }
+
+        function downloadLatestPhoto() {
+            const image = state.galleryImages[0];
+            if (!image) {
+                pulse("No photo to save");
+                return;
+            }
+            const link = document.createElement("a");
+            link.href = image.dataUrl;
+            link.download = `${image.name.replace(/[^a-z0-9_-]+/gi, "-") || "nokia-photo"}.png`;
+            link.click();
+            pulse("Photo download ready");
         }
 
         async function openCamera() {

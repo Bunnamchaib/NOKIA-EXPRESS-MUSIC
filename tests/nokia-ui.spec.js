@@ -165,6 +165,47 @@ test('playing music remains visible on the home screen as now playing context', 
   await expect(page.locator('[data-testid="now-playing"]')).toContainText('Risque');
 });
 
+test('calculator uses phone keypad digits and real operators', async ({ page }) => {
+  await page.goto(appUrl);
+  await page.evaluate(() => window.openAppForTest('calculator'));
+
+  await page.locator('[data-key="1"]').click();
+  await page.locator('[data-key="2"]').click();
+  await page.locator('[data-testid="calc-plus"]').click();
+  await page.locator('[data-key="7"]').click();
+  await page.locator('[data-testid="calc-equals"]').click();
+
+  await expect(page.locator('[data-testid="calculator-display"]')).toHaveText('19');
+
+  await page.locator('[data-testid="calc-times"]').click();
+  await page.locator('[data-key="3"]').click();
+  await page.locator('[data-testid="calc-equals"]').click();
+  await expect(page.locator('[data-testid="calculator-display"]')).toHaveText('57');
+});
+
+test('camera center key captures a named photo into Nokia gallery and exposes share actions', async ({ page }) => {
+  await page.goto(appUrl);
+  await page.evaluate(() => window.openAppForTest('camera'));
+
+  await page.getByLabel('photo name').fill('shop-front');
+  await page.locator('[data-testid="capture-delay"]').selectOption('0');
+  await page.locator('[data-testid="nav-ok"]').click();
+
+  await expect.poll(async () => page.evaluate(() => JSON.parse(localStorage.getItem('nokia.galleryImages') || '[]')[0]?.name)).toBe('shop-front');
+  await page.evaluate(() => window.openAppForTest('gallery'));
+  await expect(page.locator('[data-testid="gallery-list"]')).toContainText('shop-front');
+  await expect(page.locator('[data-testid="share-photo"]')).toBeVisible();
+  await expect(page.locator('[data-testid="download-photo"]')).toBeVisible();
+});
+
+test('camera left soft key opens camera settings', async ({ page }) => {
+  await page.goto(appUrl);
+  await page.evaluate(() => window.openAppForTest('camera'));
+
+  await page.locator('[data-testid="left-soft"]').click();
+  await expect(page.locator('.screen-view.active [data-testid="screen-title"]')).toHaveText(/Camera Settings/);
+});
+
 test('computer keyboard behaves like the physical phone keypad', async ({ page }) => {
   await page.goto(appUrl);
 
