@@ -70,6 +70,17 @@ test('keypad input builds a real dial string in order', async ({ page }) => {
   await expect(page.locator('[data-testid="dial-number"]')).toHaveText('0874467132***');
 });
 
+test('touch keyboard button opens native input for phone number entry', async ({ page }) => {
+  await page.goto(appUrl);
+
+  await page.locator('[data-testid="touch-entry-key"]').click();
+  await expect(page.locator('[data-testid="touch-entry-input"]')).toBeFocused();
+  await page.locator('[data-testid="touch-entry-input"]').fill('0812345678');
+
+  await expect(page.locator('.screen-view.active [data-testid="screen-title"]')).toHaveText(/Dial/);
+  await expect(page.locator('[data-testid="dial-number"]')).toHaveText('0812345678');
+});
+
 test('call history, menu, and camera app are reachable from phone controls', async ({ page }) => {
   await page.goto(appUrl);
 
@@ -241,6 +252,22 @@ test('calculator uses phone keypad digits and d-pad operators without leaving th
   await page.locator('[data-key="3"]').click();
   await page.locator('[data-testid="nav-ok"]').click();
   await expect(page.locator('[data-testid="calculator-display"]')).toHaveText('57');
+});
+
+test('touch keyboard can type directly into calculator and camera photo name', async ({ page }) => {
+  await page.goto(appUrl);
+
+  await page.evaluate(() => window.openAppForTest('calculator'));
+  await page.locator('[data-testid="touch-entry-key"]').click();
+  await page.locator('[data-testid="touch-entry-input"]').fill('42');
+  await expect(page.locator('.screen-view.active [data-testid="screen-title"]')).toHaveText(/Calculator/);
+  await expect(page.locator('[data-testid="calculator-display"]')).toHaveText('42');
+
+  await page.evaluate(() => window.openAppForTest('camera'));
+  await page.locator('[data-testid="left-soft"]').click();
+  await page.locator('[data-testid="touch-entry-key"]').click();
+  await page.locator('[data-testid="touch-entry-input"]').fill('custom-shot');
+  await expect(page.getByLabel('photo name')).toHaveValue('custom-shot');
 });
 
 test('camera center key captures a named photo into Nokia gallery and exposes share actions', async ({ page }) => {

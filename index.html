@@ -62,6 +62,13 @@
             color: inherit;
             cursor: pointer;
             -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
+        }
+
+        input,
+        select,
+        label {
+            touch-action: manipulation;
         }
 
         .phone {
@@ -956,6 +963,50 @@
             transform: translateY(0);
         }
 
+        .touch-entry-panel {
+            position: absolute;
+            left: 8px;
+            right: 8px;
+            bottom: 8px;
+            z-index: 9;
+            display: none;
+            grid-template-columns: 1fr 28px;
+            gap: 7px;
+            align-items: center;
+            padding: 8px;
+            border-radius: 10px;
+            background: rgba(4, 8, 12, 0.92);
+            box-shadow: 0 10px 24px rgba(0, 0, 0, 0.45), inset 0 1px rgba(255, 255, 255, 0.1);
+        }
+
+        .touch-entry-panel.active {
+            display: grid;
+        }
+
+        .touch-entry-input {
+            min-width: 0;
+            border: 1px solid rgba(255, 255, 255, 0.24);
+            border-radius: 8px;
+            padding: 8px 9px;
+            color: #fff;
+            background: #111820;
+            font-size: 16px;
+            outline: none;
+            -webkit-user-select: text;
+            user-select: text;
+        }
+
+        .touch-entry-close {
+            width: 28px;
+            height: 28px;
+            border: 0;
+            border-radius: 50%;
+            color: #fff;
+            background: rgba(255, 255, 255, 0.14);
+            font-size: 18px;
+            line-height: 1;
+        }
+
         .control-face {
             margin-top: 10px;
         }
@@ -970,6 +1021,32 @@
             border-radius: 3px 3px 0 0;
             padding: 8px 12px 0;
             box-shadow: inset 0 1px rgba(255, 255, 255, 0.16);
+        }
+
+        .touch-entry-key {
+            position: relative;
+            z-index: 8;
+            width: 58px;
+            height: 30px;
+            border: 0;
+            border-radius: 999px;
+            display: grid;
+            place-items: center;
+            justify-self: center;
+            color: #fff;
+            background: linear-gradient(#6b747c, #171a1e);
+            box-shadow: inset 0 1px rgba(255, 255, 255, 0.32), 0 4px 8px rgba(0, 0, 0, 0.45);
+        }
+
+        .touch-entry-key svg {
+            width: 25px;
+            height: 18px;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 1.8;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.6));
         }
 
         .soft-slot {
@@ -1328,6 +1405,10 @@
                         </div>
                     </section>
 
+                    <div id="touch-entry-panel" class="touch-entry-panel">
+                        <input id="touch-entry-input" class="touch-entry-input" data-testid="touch-entry-input" aria-label="manual input" autocomplete="off" autocapitalize="none" spellcheck="false">
+                        <button class="touch-entry-close" data-testid="touch-entry-close" type="button" onclick="closeTouchEntry()" aria-label="close manual input">&times;</button>
+                    </div>
                     <div id="feedback" class="feedback">Ready</div>
                 </div>
             </div>
@@ -1340,7 +1421,12 @@
                     <button class="soft-key" data-testid="left-soft" type="button" onclick="leftSoftAction()" aria-label="left soft key menu"></button>
                     <span class="soft-name" data-testid="left-bottom-name">ซ้ายล่าง</span>
                 </div>
-                <span></span>
+                <button class="touch-entry-key" data-testid="touch-entry-key" type="button" onclick="openTouchEntry()" aria-label="open iPhone keyboard">
+                    <svg viewBox="0 0 32 22" aria-hidden="true">
+                        <rect x="2.5" y="3" width="27" height="16" rx="3"></rect>
+                        <path d="M7 8h.01M11 8h.01M15 8h.01M19 8h.01M23 8h.01M8 12h.01M12 12h.01M16 12h.01M20 12h.01M24 12h.01M10 16h12"></path>
+                    </svg>
+                </button>
                 <div class="soft-slot">
                     <span class="soft-name" data-testid="right-top-name">ขวาบน</span>
                     <button class="soft-key" data-testid="right-soft" type="button" onpointerdown="startRightSoftHold()" onpointerup="finishRightSoftHold()" onpointerleave="cancelRightSoftHold()" onclick="rightSoftClick()" aria-label="right soft key back"></button>
@@ -1478,6 +1564,7 @@
             activeTrackIndex: -1,
             musicPlaying: false,
             audio: null,
+            touchEntryMode: null,
             calc: { display: "0", stored: null, operator: null, selectedOperator: "+", fresh: true },
             stream: null,
             powered: true,
@@ -1507,6 +1594,8 @@
         const musicEmpty = document.getElementById("music-empty");
         const musicPlayerTitle = document.querySelector("[data-testid='music-player-title']");
         const musicPlayerSub = document.querySelector("[data-testid='music-player-sub']");
+        const touchEntryPanel = document.getElementById("touch-entry-panel");
+        const touchEntryInput = document.getElementById("touch-entry-input");
 
         function loadJson(key, fallback) {
             try {
@@ -1543,6 +1632,75 @@
             const now = new Date();
             document.getElementById("status-date").textContent = now.toLocaleDateString("en-GB", { day: "2-digit", month: "short" });
             document.getElementById("status-time").textContent = now.toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" });
+        }
+
+        function getTouchEntryConfig() {
+            if (state.mode === "calculator") {
+                return {
+                    mode: "calculator",
+                    inputMode: "decimal",
+                    value: state.calc.display === "0" ? "" : state.calc.display,
+                    placeholder: "0"
+                };
+            }
+
+            if (state.mode === "cameraSettings") {
+                const photoName = document.getElementById("photo-name");
+                return {
+                    mode: "photoName",
+                    inputMode: "text",
+                    value: photoName ? photoName.value : "",
+                    placeholder: "Photo name"
+                };
+            }
+
+            return {
+                mode: "dial",
+                inputMode: "tel",
+                value: state.dialNumber,
+                placeholder: "Phone number"
+            };
+        }
+
+        function openTouchEntry() {
+            const config = getTouchEntryConfig();
+            state.touchEntryMode = config.mode;
+            touchEntryInput.inputMode = config.inputMode;
+            touchEntryInput.placeholder = config.placeholder;
+            touchEntryInput.value = config.value;
+            touchEntryPanel.classList.add("active");
+            requestAnimationFrame(() => {
+                touchEntryInput.focus({ preventScroll: true });
+                touchEntryInput.select();
+            });
+        }
+
+        function closeTouchEntry() {
+            applyTouchEntryValue(true);
+            touchEntryPanel.classList.remove("active");
+            touchEntryInput.blur();
+        }
+
+        function applyTouchEntryValue(commit = false) {
+            const value = touchEntryInput.value;
+            if (state.touchEntryMode === "calculator") {
+                const numeric = value.replace(/[^\d.]/g, "");
+                state.calc.display = numeric || "0";
+                state.calc.fresh = false;
+                renderCalculator();
+                return;
+            }
+
+            if (state.touchEntryMode === "photoName") {
+                const photoName = document.getElementById("photo-name");
+                if (photoName) photoName.value = value;
+                return;
+            }
+
+            const dialValue = value.replace(/[^\d*#]/g, "");
+            state.dialNumber = dialValue;
+            if (commit || dialValue) state.mode = "dial";
+            render();
         }
 
         function renderMenuSelection() {
@@ -2130,7 +2288,22 @@
             }, 1100);
         }
 
+        touchEntryInput.addEventListener("input", () => applyTouchEntryValue(false));
+        touchEntryInput.addEventListener("keydown", (event) => {
+            if (event.key === "Enter") {
+                event.preventDefault();
+                closeTouchEntry();
+            }
+            if (event.key === "Escape") {
+                event.preventDefault();
+                closeTouchEntry();
+            }
+        });
+
         document.addEventListener("keydown", (event) => {
+            if (event.target === touchEntryInput) return;
+            if (event.target && event.target.matches && event.target.matches("input, select, textarea")) return;
+
             if (/^[0-9*#]$/.test(event.key)) {
                 event.preventDefault();
                 pressDigit(event.key);
