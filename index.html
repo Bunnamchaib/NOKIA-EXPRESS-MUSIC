@@ -522,13 +522,119 @@
             line-height: 1.35;
         }
 
-        .gallery-preview {
-            width: 100%;
+        .gallery-view {
+            padding: 0;
+            background: #f5f6f8;
+            color: #111;
+        }
+
+        .gallery-topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 13px 12px 7px;
+            color: #121212;
+        }
+
+        .gallery-title {
+            font-size: 20px;
+            font-weight: 800;
+        }
+
+        .gallery-action {
+            border: 0;
+            border-radius: 999px;
+            padding: 5px 10px;
+            color: #0878ff;
+            background: rgba(8, 120, 255, 0.1);
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2px;
+            padding: 0 2px 56px;
+            overflow: auto;
+        }
+
+        .gallery-tile {
+            position: relative;
             aspect-ratio: 1 / 1;
-            margin-top: 12px;
-            border-radius: 8px;
-            background: url("9yb1x8i34faf1.jpg") 50% 28% / 214% auto no-repeat;
-            box-shadow: inset 0 0 0 1px rgba(255,255,255,.2), 0 8px 16px rgba(0,0,0,.35);
+            border: 0;
+            padding: 0;
+            overflow: hidden;
+            background: #d7dce1;
+        }
+
+        .gallery-tile img {
+            width: 100%;
+            height: 100%;
+            display: block;
+            object-fit: cover;
+        }
+
+        .gallery-tile.selected::after {
+            content: "";
+            position: absolute;
+            inset: 4px;
+            border: 2px solid #fff;
+            border-radius: 7px;
+            box-shadow: 0 0 0 2px #0878ff;
+        }
+
+        .gallery-check {
+            position: absolute;
+            right: 5px;
+            top: 5px;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            display: grid;
+            place-items: center;
+            color: #fff;
+            background: #0878ff;
+            font-size: 12px;
+            font-weight: 900;
+            opacity: 0;
+        }
+
+        .gallery-tile.selected .gallery-check {
+            opacity: 1;
+        }
+
+        .gallery-empty {
+            grid-column: 1 / -1;
+            margin: 22px 12px;
+            color: #5d6873;
+            font-size: 12px;
+            text-align: center;
+        }
+
+        .gallery-bottombar {
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            display: flex;
+            justify-content: space-around;
+            padding: 8px 9px;
+            background: rgba(246, 248, 251, 0.92);
+            backdrop-filter: blur(8px);
+            box-shadow: 0 -1px 0 rgba(0, 0, 0, 0.08);
+        }
+
+        .gallery-icon-btn {
+            width: 36px;
+            height: 32px;
+            border: 0;
+            border-radius: 9px;
+            display: grid;
+            place-items: center;
+            color: #0878ff;
+            background: transparent;
+            font-size: 18px;
         }
 
         .calc-ops {
@@ -548,28 +654,198 @@
             font-weight: 800;
         }
 
-        .camera-controls {
-            position: absolute;
-            left: 8px;
-            right: 8px;
-            bottom: 8px;
-            z-index: 3;
-            display: grid;
-            gap: 6px;
-            padding: 8px;
-            border-radius: 8px;
-            background: rgba(0, 0, 0, 0.62);
+        .calc-op.selected {
+            color: #08131f;
+            background: linear-gradient(#9be2ff, #40a9ee);
+            box-shadow: 0 0 0 2px rgba(140, 224, 255, 0.38), inset 0 1px rgba(255, 255, 255, 0.55);
         }
 
-        .camera-controls input,
-        .camera-controls select {
+        .music-view {
+            padding-bottom: 76px;
+        }
+
+        .music-empty {
+            margin: 18px 0 12px;
+            padding: 16px 10px;
+            border-radius: 8px;
+            color: #dce8ef;
+            text-align: center;
+            background: linear-gradient(#28313a, #101419);
+        }
+
+        .music-empty strong {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 15px;
+        }
+
+        .music-import {
+            position: relative;
+            overflow: hidden;
+            display: block;
+            margin-top: 10px;
+            border-radius: 8px;
+            padding: 9px;
+            color: #07111b;
+            text-align: center;
+            font-weight: 800;
+            background: linear-gradient(#9be2ff, #40a9ee);
+        }
+
+        .music-import input {
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        .music-player {
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            min-height: 66px;
+            display: grid;
+            grid-template-columns: 42px 1fr 30px;
+            align-items: center;
+            gap: 9px;
+            padding: 10px 12px;
+            background: rgba(3, 5, 7, 0.92);
+            box-shadow: 0 -1px 0 rgba(255, 255, 255, 0.08);
+        }
+
+        .music-art {
+            width: 42px;
+            height: 42px;
+            border-radius: 7px;
+            background: url("9yb1x8i34faf1.jpg") 50% 28% / 214% auto no-repeat;
+        }
+
+        .music-player-title {
+            font-size: 12px;
+            font-weight: 800;
+            color: #fff;
+        }
+
+        .music-player-sub {
+            margin-top: 2px;
+            color: #9aa8b1;
+            font-size: 10px;
+        }
+
+        .music-play {
+            width: 30px;
+            height: 30px;
+            border: 0;
+            border-radius: 50%;
+            color: #07111b;
+            background: #fff;
+            font-size: 13px;
+        }
+
+        .camera-topbar {
+            position: absolute;
+            left: 10px;
+            right: 10px;
+            top: 10px;
+            z-index: 4;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .camera-icon-btn {
+            width: 34px;
+            height: 34px;
+            border: 0;
+            border-radius: 50%;
+            display: grid;
+            place-items: center;
+            color: #fff;
+            background: rgba(0, 0, 0, 0.45);
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.16);
+            font-size: 17px;
+        }
+
+        .camera-pill {
+            border-radius: 999px;
+            padding: 5px 10px;
+            color: #fff;
+            background: rgba(0, 0, 0, 0.45);
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .camera-controls {
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 3;
+            display: grid;
+            grid-template-columns: 46px 1fr 46px;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px 14px;
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.88), rgba(0, 0, 0, 0.2));
+        }
+
+        .camera-preview-thumb {
+            width: 42px;
+            height: 42px;
+            border: 2px solid rgba(255, 255, 255, 0.86);
+            border-radius: 9px;
+            background: url("9yb1x8i34faf1.jpg") 50% 28% / 214% auto no-repeat;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.36);
+        }
+
+        .camera-shutter {
+            width: 58px;
+            height: 58px;
+            justify-self: center;
+            border: 4px solid #fff;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.28);
+            box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.25), 0 6px 18px rgba(0, 0, 0, 0.35);
+        }
+
+        .camera-shutter::after {
+            content: "";
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            display: block;
+            margin: 4px auto;
+            background: #fff;
+        }
+
+        .camera-mini-control {
+            width: 38px;
+            height: 38px;
+            border: 0;
+            border-radius: 50%;
+            display: grid;
+            place-items: center;
+            color: #fff;
+            background: rgba(255, 255, 255, 0.16);
+            font-size: 18px;
+        }
+
+        .camera-settings-panel {
+            display: grid;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .camera-settings-panel input,
+        .camera-settings-panel select {
             width: 100%;
             border: 1px solid rgba(255,255,255,.24);
-            border-radius: 5px;
-            padding: 5px 6px;
+            border-radius: 9px;
+            padding: 8px 9px;
             color: #fff;
             background: #111820;
-            font-size: 11px;
+            font-size: 12px;
         }
 
         .metric {
@@ -644,15 +920,12 @@
 
         .soft-slot {
             display: grid;
-            gap: 3px;
             justify-items: center;
             min-width: 0;
         }
 
         .soft-name {
-            font-size: 9px;
-            color: #b7c1c8;
-            text-shadow: 0 1px 2px #000;
+            display: none;
         }
 
         .soft-key {
@@ -867,14 +1140,17 @@
                         <div class="softbar"><span>Call</span><span>Back</span></div>
                     </section>
 
-                    <section id="gallery-view" class="screen-view app-view">
-                        <div class="screen-title" data-testid="screen-title">Gallery</div>
-                        <div class="gallery-preview" aria-label="Cute Is What We Aim For album image"></div>
-                        <button class="list-row" type="button" onclick="setWallpaper('9yb1x8i34faf1.jpg')">Set wallpaper</button>
-                        <div id="gallery-list" class="list" data-testid="gallery-list"></div>
-                        <button class="list-row" data-testid="share-photo" type="button" onclick="shareLatestPhoto()">Share latest photo</button>
-                        <button class="list-row" data-testid="download-photo" type="button" onclick="downloadLatestPhoto()">Save / download latest photo</button>
-                        <div class="tiny-copy">Images on phone: album art plus captured Nokia photos.</div>
+                    <section id="gallery-view" class="screen-view app-view gallery-view">
+                        <div class="gallery-topbar">
+                            <div class="gallery-title" data-testid="screen-title">Gallery</div>
+                            <button class="gallery-action" data-testid="gallery-select" type="button" onclick="toggleGallerySelect()">Select</button>
+                        </div>
+                        <div id="gallery-list" class="gallery-grid" data-testid="gallery-list"></div>
+                        <div class="gallery-bottombar">
+                            <button class="gallery-icon-btn" data-testid="share-photo" type="button" onclick="shareSelectedPhoto()" aria-label="share selected photo">&#8679;</button>
+                            <button class="gallery-icon-btn" type="button" onclick="setSelectedAsWallpaper()" aria-label="set selected as wallpaper">&#9728;</button>
+                            <button class="gallery-icon-btn" data-testid="download-photo" type="button" onclick="downloadSelectedPhoto()" aria-label="save selected photo">&#8681;</button>
+                        </div>
                     </section>
 
                     <section id="contacts-view" class="screen-view app-view">
@@ -895,11 +1171,24 @@
                         </div>
                     </section>
 
-                    <section id="music-view" class="screen-view app-view">
+                    <section id="music-view" class="screen-view app-view music-view">
                         <div class="screen-title" data-testid="screen-title">Music</div>
-                        <div class="list">
-                            <button class="list-row selected" type="button" onclick="playTrack('Risque', 'Cute Is What We Aim For')">Risque</button>
-                            <button class="list-row" type="button">Choose local music folder - coming next</button>
+                        <div id="music-library" class="list" data-testid="music-library"></div>
+                        <div id="music-empty" class="music-empty" data-testid="music-empty">
+                            <strong>No music</strong>
+                            <span>Import songs from this device.</span>
+                            <label class="music-import">
+                                Import folder
+                                <input id="music-folder-input" data-testid="music-folder-input" type="file" accept="audio/*" multiple webkitdirectory onchange="importMusicFiles(event)">
+                            </label>
+                        </div>
+                        <div class="music-player" data-testid="music-player">
+                            <div class="music-art" aria-hidden="true"></div>
+                            <div>
+                                <div class="music-player-title" data-testid="music-player-title">No music</div>
+                                <div class="music-player-sub" data-testid="music-player-sub">Nothing playing</div>
+                            </div>
+                            <button class="music-play" type="button" onclick="toggleMusicPlay()" aria-label="play music">&#9654;</button>
                         </div>
                     </section>
 
@@ -913,7 +1202,6 @@
                             <button class="calc-op" data-testid="calc-divide" type="button" onclick="calcOperator('/')">/</button>
                             <button class="calc-op" data-testid="calc-equals" type="button" onclick="calcEquals()">=</button>
                         </div>
-                        <div class="tiny-copy">Use the phone keypad for numbers.</div>
                     </section>
 
                     <section id="alarm-view" class="screen-view app-view">
@@ -941,31 +1229,34 @@
                     <section id="recent-view" class="screen-view app-view">
                         <div class="screen-title" data-testid="screen-title">Recent Apps</div>
                         <div id="recent-list" class="recent-card" data-testid="recent-list"></div>
-                        <div class="tiny-copy">Left/right: choose. Up: close selected. Down: clear all.</div>
                     </section>
 
                     <section id="camera-view" class="screen-view camera-view">
-                        <div class="screen-title" data-testid="screen-title" style="position:absolute;left:12px;top:10px;z-index:2;">Camera</div>
+                        <div class="screen-title" data-testid="screen-title" style="position:absolute;left:-999px;top:auto;">Camera</div>
                         <video id="camera-feed" class="camera-feed" autoplay playsinline muted></video>
                         <div id="camera-status" class="camera-status">Requesting camera...</div>
+                        <div class="camera-topbar">
+                            <button class="camera-icon-btn" type="button" onclick="leftSoftAction()" aria-label="camera settings">&#9881;</button>
+                            <div class="camera-pill" id="camera-mode-pill">PHOTO</div>
+                            <button class="camera-icon-btn" type="button" onclick="openApp('gallery')" aria-label="open gallery">&#9638;</button>
+                        </div>
                         <div class="camera-controls">
+                            <button class="camera-preview-thumb" type="button" onclick="openApp('gallery')" aria-label="open gallery"></button>
+                            <button class="camera-shutter" data-testid="camera-shutter" type="button" onclick="capturePhoto()" aria-label="capture photo"></button>
+                            <button class="camera-mini-control" type="button" onclick="leftSoftAction()" aria-label="camera settings">&#8942;</button>
+                        </div>
+                    </section>
+
+                    <section id="cameraSettings-view" class="screen-view app-view">
+                        <div class="screen-title" data-testid="screen-title">Camera Settings</div>
+                        <div class="camera-settings-panel">
                             <input id="photo-name" aria-label="photo name" placeholder="Photo name" value="Nokia photo">
                             <select id="capture-delay" data-testid="capture-delay" aria-label="capture delay">
                                 <option value="0">No timer</option>
                                 <option value="3">3 sec</option>
                                 <option value="5">5 sec</option>
                             </select>
-                            <div class="tiny-copy">Center key captures. Left soft opens camera settings.</div>
-                        </div>
-                    </section>
-
-                    <section id="cameraSettings-view" class="screen-view app-view">
-                        <div class="screen-title" data-testid="screen-title">Camera Settings</div>
-                        <div class="list">
-                            <button class="list-row selected" type="button">Timer: off / 3 sec / 5 sec</button>
-                            <button class="list-row" type="button">File name: editable before capture</button>
-                            <button class="list-row" type="button">Save to: Nokia Gallery</button>
-                            <button class="list-row" type="button">Share: Web Share if supported, download fallback</button>
+                            <button class="list-row selected" type="button" onclick="openCamera()">Back to camera</button>
                         </div>
                     </section>
 
@@ -1036,7 +1327,8 @@
             callHistory: "nokia.callHistory",
             wallpaper: "nokia.wallpaper",
             settings: "nokia.settings",
-            galleryImages: "nokia.galleryImages"
+            galleryImages: "nokia.galleryImages",
+            musicTracks: "nokia.musicTracks"
         };
 
         const defaultSettings = {
@@ -1070,7 +1362,13 @@
             suppressRightClick: false,
             nowPlaying: null,
             galleryImages: loadJson(STORAGE.galleryImages, []),
-            calc: { display: "0", stored: null, operator: null, fresh: true },
+            gallerySelectMode: false,
+            selectedGalleryIndex: 0,
+            musicTracks: loadJson(STORAGE.musicTracks, []),
+            activeTrackIndex: -1,
+            musicPlaying: false,
+            audio: null,
+            calc: { display: "0", stored: null, operator: null, selectedOperator: "+", fresh: true },
             stream: null,
             powered: true,
             settings: loadJson(STORAGE.settings, defaultSettings),
@@ -1092,7 +1390,13 @@
         const recentList = document.getElementById("recent-list");
         const nowPlaying = document.querySelector("[data-testid='now-playing']");
         const galleryList = document.getElementById("gallery-list");
+        const gallerySelect = document.querySelector("[data-testid='gallery-select']");
+        const cameraPreviewThumb = document.querySelector(".camera-preview-thumb");
         const calcDisplay = document.querySelector("[data-testid='calculator-display']");
+        const musicLibrary = document.getElementById("music-library");
+        const musicEmpty = document.getElementById("music-empty");
+        const musicPlayerTitle = document.querySelector("[data-testid='music-player-title']");
+        const musicPlayerSub = document.querySelector("[data-testid='music-player-sub']");
 
         function loadJson(key, fallback) {
             try {
@@ -1120,6 +1424,7 @@
             renderRecentApps();
             renderGallery();
             renderCalculator();
+            renderMusic();
             renderStatusBar();
             nowPlaying.textContent = state.nowPlaying ? `Now playing: ${state.nowPlaying.title}` : "Now playing: -";
         }
@@ -1161,15 +1466,80 @@
 
         function renderGallery() {
             if (!galleryList) return;
-            const captured = state.galleryImages.map((image, index) => (
-                `<button class="list-row ${index === 0 ? "selected" : ""}" type="button">${image.name}<br><small>${image.createdAt}</small></button>`
-            )).join("");
-            galleryList.innerHTML = captured || '<div class="list-row selected">No captured photos yet</div>';
+            const images = getGalleryImages();
+            state.selectedGalleryIndex = Math.min(state.selectedGalleryIndex, images.length - 1);
+            gallerySelect.textContent = state.gallerySelectMode ? "Done" : "Select";
+            galleryList.innerHTML = images.map((image, index) => (
+                `<button class="gallery-tile ${index === state.selectedGalleryIndex ? "selected" : ""}" type="button" onclick="selectGalleryImage(${index})" aria-label="${escapeHtml(image.name)}">
+                    <img src="${image.src}" alt="${escapeHtml(image.name)}">
+                    <span class="gallery-check">&#10003;</span>
+                </button>`
+            )).join("") || '<div class="gallery-empty">No photos yet</div>';
+
+            const latest = images[0];
+            if (latest && cameraPreviewThumb) cameraPreviewThumb.style.backgroundImage = `url("${latest.src}")`;
+        }
+
+        function getGalleryImages() {
+            return [
+                {
+                    name: "Album art",
+                    src: "9yb1x8i34faf1.jpg",
+                    dataUrl: null,
+                    createdAt: "On phone"
+                },
+                ...state.galleryImages.map((image) => ({
+                    ...image,
+                    src: image.dataUrl
+                }))
+            ];
+        }
+
+        function escapeHtml(value) {
+            return String(value).replace(/[&<>"']/g, (character) => ({
+                "&": "&amp;",
+                "<": "&lt;",
+                ">": "&gt;",
+                '"': "&quot;",
+                "'": "&#39;"
+            }[character]));
+        }
+
+        function toggleGallerySelect() {
+            state.gallerySelectMode = !state.gallerySelectMode;
+            renderGallery();
+            pulse(state.gallerySelectMode ? "Select" : "Done");
+        }
+
+        function selectGalleryImage(index) {
+            state.selectedGalleryIndex = index;
+            if (!state.gallerySelectMode) state.gallerySelectMode = true;
+            renderGallery();
+        }
+
+        function getSelectedGalleryImage() {
+            return getGalleryImages()[state.selectedGalleryIndex] || getGalleryImages()[0];
         }
 
         function renderCalculator() {
             if (!calcDisplay) return;
             calcDisplay.textContent = state.calc.display;
+            document.querySelectorAll(".calc-op").forEach((button) => {
+                button.classList.toggle("selected", button.textContent === state.calc.selectedOperator || (button.textContent === "×" && state.calc.selectedOperator === "*"));
+            });
+        }
+
+        function renderMusic() {
+            if (!musicLibrary) return;
+            musicEmpty.style.display = state.musicTracks.length ? "none" : "block";
+            musicLibrary.style.display = state.musicTracks.length ? "grid" : "none";
+            musicLibrary.innerHTML = state.musicTracks.map((track, index) => (
+                `<button class="list-row ${index === state.activeTrackIndex ? "selected" : ""}" type="button" onclick="playTrackAt(${index})">${escapeHtml(track.title)}<br><small>${escapeHtml(track.artist || "Local file")}</small></button>`
+            )).join("");
+
+            const activeTrack = state.musicTracks[state.activeTrackIndex];
+            musicPlayerTitle.textContent = activeTrack ? activeTrack.title : "No music";
+            musicPlayerSub.textContent = activeTrack ? (state.musicPlaying ? "Playing" : "Paused") : "Nothing playing";
         }
 
         function rememberRecent(mode) {
@@ -1204,6 +1574,14 @@
                 capturePhoto();
                 return;
             }
+            if (state.mode === "calculator") {
+                calcEquals();
+                return;
+            }
+            if (state.mode === "gallery") {
+                toggleGallerySelect();
+                return;
+            }
             if (state.mode === "recent") {
                 const app = state.recentApps[state.recentIndex];
                 if (app) openApp(app);
@@ -1217,6 +1595,12 @@
         }
 
         function navMove(direction) {
+            if (state.mode === "calculator") {
+                const operatorMap = { left: "+", up: "-", right: "*", down: "/" };
+                calcOperator(operatorMap[direction]);
+                return;
+            }
+
             if (state.mode === "recent") {
                 if (direction === "left") state.recentIndex = Math.max(0, state.recentIndex - 1);
                 if (direction === "right") state.recentIndex = Math.min(state.recentApps.length - 1, state.recentIndex + 1);
@@ -1362,8 +1746,77 @@
 
         function playTrack(title, artist) {
             state.nowPlaying = { title, artist };
-            showMode("home", { recent: false });
+            render();
             pulse("Playing " + title);
+        }
+
+        function playTrackAt(index) {
+            const track = state.musicTracks[index];
+            if (!track) return;
+            state.activeTrackIndex = index;
+            state.musicPlaying = true;
+            state.nowPlaying = { title: track.title, artist: track.artist || "Local file" };
+
+            if (state.audio) {
+                state.audio.pause();
+                state.audio = null;
+            }
+
+            if (track.url) {
+                state.audio = new Audio(track.url);
+                state.audio.play().catch(() => {
+                    state.musicPlaying = false;
+                    renderMusic();
+                    pulse("Tap play again");
+                });
+            }
+
+            render();
+            pulse("Playing " + track.title);
+        }
+
+        function toggleMusicPlay() {
+            const activeTrack = state.musicTracks[state.activeTrackIndex];
+            if (!activeTrack) {
+                pulse("No music");
+                return;
+            }
+
+            if (state.audio && state.musicPlaying) {
+                state.audio.pause();
+                state.musicPlaying = false;
+            } else if (state.audio) {
+                state.audio.play().catch(() => pulse("Playback blocked"));
+                state.musicPlaying = true;
+            } else {
+                playTrackAt(state.activeTrackIndex);
+                return;
+            }
+
+            renderMusic();
+        }
+
+        function importMusicFiles(event) {
+            const files = Array.from(event.target.files || []).filter((file) => file.type.startsWith("audio/"));
+            if (!files.length) {
+                pulse("No audio files");
+                return;
+            }
+
+            state.musicTracks.forEach((track) => {
+                if (track.url) URL.revokeObjectURL(track.url);
+            });
+
+            state.musicTracks = files.map((file) => ({
+                title: file.name.replace(/\.[^.]+$/, ""),
+                artist: file.webkitRelativePath ? file.webkitRelativePath.split("/").slice(0, -1).join("/") : "Local file",
+                url: URL.createObjectURL(file)
+            }));
+            state.activeTrackIndex = 0;
+            state.musicPlaying = false;
+            saveJson(STORAGE.musicTracks, state.musicTracks.map(({ title, artist }) => ({ title, artist })));
+            renderMusic();
+            pulse(`${state.musicTracks.length} songs imported`);
         }
 
         function calcDigit(digit) {
@@ -1380,7 +1833,9 @@
             if (state.calc.operator && !state.calc.fresh) calcEquals();
             state.calc.stored = Number(state.calc.display);
             state.calc.operator = operator;
+            state.calc.selectedOperator = operator;
             state.calc.fresh = true;
+            renderCalculator();
         }
 
         function calcEquals() {
@@ -1419,11 +1874,17 @@
                 createdAt: new Date().toLocaleString("en-GB", { dateStyle: "short", timeStyle: "short" })
             };
             state.galleryImages = [image, ...state.galleryImages].slice(0, 12);
+            state.selectedGalleryIndex = 1;
             saveJson(STORAGE.galleryImages, state.galleryImages);
             cameraStatus.style.display = "grid";
             cameraStatus.textContent = `Saved ${name} to Nokia Gallery`;
             renderGallery();
             pulse("Photo saved");
+            if (state.stream) {
+                setTimeout(() => {
+                    if (state.mode === "camera" && state.stream) cameraStatus.style.display = "none";
+                }, 850);
+            }
         }
 
         function makePhotoDataUrl(name) {
@@ -1431,26 +1892,46 @@
             canvas.width = 240;
             canvas.height = 320;
             const ctx = canvas.getContext("2d");
-            ctx.fillStyle = "#111820";
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-            ctx.fillStyle = "#273847";
-            ctx.fillRect(12, 12, 216, 296);
-            ctx.fillStyle = "#eaf9ff";
-            ctx.font = "bold 20px Segoe UI";
-            ctx.fillText("NOKIA", 22, 42);
+            if (cameraFeed.videoWidth && cameraFeed.videoHeight) {
+                const sourceRatio = cameraFeed.videoWidth / cameraFeed.videoHeight;
+                const targetRatio = canvas.width / canvas.height;
+                let sx = 0;
+                let sy = 0;
+                let sw = cameraFeed.videoWidth;
+                let sh = cameraFeed.videoHeight;
+                if (sourceRatio > targetRatio) {
+                    sw = cameraFeed.videoHeight * targetRatio;
+                    sx = (cameraFeed.videoWidth - sw) / 2;
+                } else {
+                    sh = cameraFeed.videoWidth / targetRatio;
+                    sy = (cameraFeed.videoHeight - sh) / 2;
+                }
+                ctx.drawImage(cameraFeed, sx, sy, sw, sh, 0, 0, canvas.width, canvas.height);
+            } else {
+                ctx.fillStyle = "#111820";
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = "#273847";
+                ctx.fillRect(12, 12, 216, 296);
+                ctx.fillStyle = "#eaf9ff";
+                ctx.font = "bold 20px Segoe UI";
+                ctx.fillText("NOKIA", 22, 42);
+                ctx.strokeStyle = "#ffffff";
+                ctx.lineWidth = 4;
+                ctx.strokeRect(74, 112, 92, 64);
+                ctx.beginPath();
+                ctx.arc(120, 144, 22, 0, Math.PI * 2);
+                ctx.stroke();
+            }
+            ctx.fillStyle = "rgba(0, 0, 0, 0.42)";
+            ctx.fillRect(0, 282, canvas.width, 38);
+            ctx.fillStyle = "#fff";
             ctx.font = "14px Segoe UI";
-            ctx.fillText(name, 22, 292);
-            ctx.strokeStyle = "#ffffff";
-            ctx.lineWidth = 4;
-            ctx.strokeRect(74, 112, 92, 64);
-            ctx.beginPath();
-            ctx.arc(120, 144, 22, 0, Math.PI * 2);
-            ctx.stroke();
+            ctx.fillText(name, 14, 306);
             return canvas.toDataURL("image/png");
         }
 
-        async function shareLatestPhoto() {
-            const image = state.galleryImages[0];
+        async function shareSelectedPhoto() {
+            const image = getSelectedGalleryImage();
             if (!image) {
                 pulse("No photo to share");
                 return;
@@ -1465,20 +1946,36 @@
                     return;
                 }
             }
-            downloadLatestPhoto();
+            downloadSelectedPhoto();
         }
 
-        function downloadLatestPhoto() {
-            const image = state.galleryImages[0];
+        function downloadSelectedPhoto() {
+            const image = getSelectedGalleryImage();
             if (!image) {
                 pulse("No photo to save");
                 return;
             }
             const link = document.createElement("a");
-            link.href = image.dataUrl;
+            link.href = image.dataUrl || image.src;
             link.download = `${image.name.replace(/[^a-z0-9_-]+/gi, "-") || "nokia-photo"}.png`;
             link.click();
             pulse("Photo download ready");
+        }
+
+        async function shareLatestPhoto() {
+            state.selectedGalleryIndex = Math.min(1, getGalleryImages().length - 1);
+            await shareSelectedPhoto();
+        }
+
+        function downloadLatestPhoto() {
+            state.selectedGalleryIndex = Math.min(1, getGalleryImages().length - 1);
+            downloadSelectedPhoto();
+        }
+
+        function setSelectedAsWallpaper() {
+            const image = getSelectedGalleryImage();
+            if (!image) return;
+            setWallpaper(image.src);
         }
 
         async function openCamera() {
@@ -1532,7 +2029,7 @@
 
             if (event.key === "Enter") {
                 event.preventDefault();
-                if (state.mode === "menu") {
+                if (["menu", "camera", "gallery", "recent"].includes(state.mode)) {
                     navSelect();
                 } else {
                     startCall();

@@ -1,5 +1,7 @@
 const { test, expect } = require('@playwright/test');
 const path = require('path');
+const fs = require('fs');
+const os = require('os');
 
 const appUrl = `file://${path.resolve(__dirname, '..', 'index.html').replace(/\\/g, '/')}`;
 
@@ -63,7 +65,7 @@ test('d-pad selection opens gallery and gallery can set the wallpaper', async ({
 
   const activeTitle = page.locator('.screen-view.active [data-testid="screen-title"]');
   await expect(activeTitle).toHaveText(/Gallery/);
-  await page.getByRole('button', { name: /set wallpaper/i }).click();
+  await page.getByLabel('set selected as wallpaper').click();
   await expect.poll(async () => page.evaluate(() => localStorage.getItem('nokia.wallpaper'))).toContain('9yb1x8i34faf1.jpg');
 });
 
@@ -110,13 +112,13 @@ test('left music controls are compact and stay inside the red rail frame', async
   }
 });
 
-test('named soft keys support back one step, exit all, and recent apps hold gesture', async ({ page }) => {
+test('soft keys support back one step, exit all, and recent apps hold gesture without visible labels', async ({ page }) => {
   await page.goto(appUrl);
 
-  await expect(page.locator('[data-testid="left-top-name"]')).toHaveText('ซ้ายบน');
-  await expect(page.locator('[data-testid="right-top-name"]')).toHaveText('ขวาบน');
-  await expect(page.locator('[data-testid="left-bottom-name"]')).toHaveText('ซ้ายล่าง');
-  await expect(page.locator('[data-testid="right-bottom-name"]')).toHaveText('ขวาล่าง');
+  await expect(page.locator('[data-testid="left-top-name"]')).toBeHidden();
+  await expect(page.locator('[data-testid="right-top-name"]')).toBeHidden();
+  await expect(page.locator('[data-testid="left-bottom-name"]')).toBeHidden();
+  await expect(page.locator('[data-testid="right-bottom-name"]')).toBeHidden();
 
   await page.locator('[data-testid="nav-ok"]').click();
   await page.locator('[data-testid="nav-right"]').click();
@@ -155,31 +157,41 @@ test('status bar uses phone-style icons for 5G signal, wifi, and battery', async
   await expect(page.locator('[data-testid="battery-icon"] .battery-fill')).toHaveCount(1);
 });
 
-test('playing music remains visible on the home screen as now playing context', async ({ page }) => {
+test('music opens empty with an import control and bottom player', async ({ page }) => {
   await page.goto(appUrl);
 
   await page.evaluate(() => window.openAppForTest('music'));
-  await page.getByRole('button', { name: /^Risque/ }).click();
+  await expect(page.locator('[data-testid="music-empty"]')).toContainText('No music');
+  await expect(page.locator('[data-testid="music-player-title"]')).toHaveText('No music');
+  await expect(page.locator('[data-testid="music-folder-input"]')).toBeAttached();
+
+  const musicDir = fs.mkdtempSync(path.join(os.tmpdir(), 'nokia-music-'));
+  fs.writeFileSync(path.join(musicDir, 'demo-song.mp3'), Buffer.from([0, 1, 2, 3]));
+  await page.locator('[data-testid="music-folder-input"]').setInputFiles(musicDir);
+  await expect(page.locator('[data-testid="music-library"]')).toContainText('demo-song');
+  await page.getByRole('button', { name: /demo-song/ }).click();
   await page.locator('[data-testid="right-bottom"]').click();
 
-  await expect(page.locator('[data-testid="now-playing"]')).toContainText('Risque');
+  await expect(page.locator('[data-testid="now-playing"]')).toContainText('demo-song');
 });
 
-test('calculator uses phone keypad digits and real operators', async ({ page }) => {
+test('calculator uses phone keypad digits and d-pad operators without leaving the app', async ({ page }) => {
   await page.goto(appUrl);
   await page.evaluate(() => window.openAppForTest('calculator'));
 
   await page.locator('[data-key="1"]').click();
   await page.locator('[data-key="2"]').click();
-  await page.locator('[data-testid="calc-plus"]').click();
+  await page.locator('[data-testid="nav-left"]').click();
+  await expect(page.locator('.screen-view.active [data-testid="screen-title"]')).toHaveText(/Calculator/);
   await page.locator('[data-key="7"]').click();
-  await page.locator('[data-testid="calc-equals"]').click();
+  await page.locator('[data-testid="nav-ok"]').click();
 
   await expect(page.locator('[data-testid="calculator-display"]')).toHaveText('19');
 
-  await page.locator('[data-testid="calc-times"]').click();
+  await page.locator('[data-testid="nav-right"]').click();
+  await expect(page.locator('.screen-view.active [data-testid="screen-title"]')).toHaveText(/Calculator/);
   await page.locator('[data-key="3"]').click();
-  await page.locator('[data-testid="calc-equals"]').click();
+  await page.locator('[data-testid="nav-ok"]').click();
   await expect(page.locator('[data-testid="calculator-display"]')).toHaveText('57');
 });
 
@@ -187,13 +199,15 @@ test('camera center key captures a named photo into Nokia gallery and exposes sh
   await page.goto(appUrl);
   await page.evaluate(() => window.openAppForTest('camera'));
 
+  await page.locator('[data-testid="left-soft"]').click();
   await page.getByLabel('photo name').fill('shop-front');
   await page.locator('[data-testid="capture-delay"]').selectOption('0');
+  await page.getByRole('button', { name: /back to camera/i }).click();
   await page.locator('[data-testid="nav-ok"]').click();
 
   await expect.poll(async () => page.evaluate(() => JSON.parse(localStorage.getItem('nokia.galleryImages') || '[]')[0]?.name)).toBe('shop-front');
   await page.evaluate(() => window.openAppForTest('gallery'));
-  await expect(page.locator('[data-testid="gallery-list"]')).toContainText('shop-front');
+  await expect(page.getByRole('button', { name: 'shop-front' })).toBeVisible();
   await expect(page.locator('[data-testid="share-photo"]')).toBeVisible();
   await expect(page.locator('[data-testid="download-photo"]')).toBeVisible();
 });
