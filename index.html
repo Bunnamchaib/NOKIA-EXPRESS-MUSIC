@@ -100,7 +100,26 @@
             width: 23px;
             height: 56px;
             border-radius: 10px;
-            font-size: 18px;
+            font-size: 0;
+            overflow: hidden;
+            color: #fff;
+        }
+
+        .music-stack .side-key svg {
+            width: 15px;
+            height: 22px;
+            display: block;
+            fill: currentColor;
+            stroke: currentColor;
+            stroke-width: 1.7;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.65));
+        }
+
+        .music-stack .side-key.play-pause svg {
+            width: 18px;
+            height: 24px;
         }
 
         .volume-stack {
@@ -1059,9 +1078,25 @@
         <div class="side-rail left"></div>
         <div class="side-rail right"></div>
         <div class="music-stack" aria-label="Music side controls">
-            <button class="side-key" type="button" onclick="pressKey('Previous')">|&#9664;</button>
-            <button class="side-key" type="button" onclick="pressKey('Play / Pause')">&#9654;||</button>
-            <button class="side-key" type="button" onclick="pressKey('Next')">&#9654;|</button>
+            <button class="side-key" type="button" onclick="pressKey('Previous')" aria-label="previous track">
+                <svg viewBox="0 0 18 24" aria-hidden="true">
+                    <rect x="2" y="4" width="2.4" height="16" rx="1"></rect>
+                    <path d="M15.5 5.2v13.6L5.6 12z"></path>
+                </svg>
+            </button>
+            <button class="side-key play-pause" type="button" onclick="pressKey('Play / Pause')" aria-label="play pause">
+                <svg viewBox="0 0 22 24" aria-hidden="true">
+                    <path d="M3.5 4.5v15l8-7.5z"></path>
+                    <rect x="14" y="5" width="2.4" height="14" rx="1.2"></rect>
+                    <rect x="18.1" y="5" width="2.4" height="14" rx="1.2"></rect>
+                </svg>
+            </button>
+            <button class="side-key" type="button" onclick="pressKey('Next')" aria-label="next track">
+                <svg viewBox="0 0 18 24" aria-hidden="true">
+                    <path d="M2.5 5.2v13.6l9.9-6.8z"></path>
+                    <rect x="13.6" y="4" width="2.4" height="16" rx="1"></rect>
+                </svg>
+            </button>
         </div>
         <div class="volume-stack" aria-label="Volume side controls">
             <button class="side-key" data-testid="volume-up" type="button" onclick="changeVolume(1)" aria-label="volume up">+</button>

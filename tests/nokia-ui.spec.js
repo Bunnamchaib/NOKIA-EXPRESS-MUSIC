@@ -105,6 +105,9 @@ test('left music controls are compact and stay inside the red rail frame', async
     return { left: rect.left, right: rect.right, width: rect.width };
   }));
 
+  await expect(page.locator('.music-stack .side-key svg')).toHaveCount(3);
+  await expect(page.locator('.music-stack .side-key').first()).toHaveCSS('color', 'rgb(255, 255, 255)');
+
   for (const button of buttons) {
     expect(button.width).toBeLessThanOrEqual(26);
     expect(button.left).toBeGreaterThanOrEqual(rail.left - 1);
