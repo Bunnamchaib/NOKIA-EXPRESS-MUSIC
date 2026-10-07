@@ -93,6 +93,78 @@ test('settings exposes configurable hardware button controls', async ({ page }) 
   await expect(page.locator('[data-testid="button-settings"]')).toContainText('hold');
 });
 
+test('left music controls are compact and stay inside the red rail frame', async ({ page }) => {
+  await page.goto(appUrl);
+
+  const railBox = await page.locator('.side-rail.left').boundingBox();
+  const rail = { left: railBox.x, right: railBox.x + railBox.width };
+  const buttons = await page.locator('.music-stack .side-key').evaluateAll((nodes) => nodes.map((node) => {
+    const rect = node.getBoundingClientRect();
+    return { left: rect.left, right: rect.right, width: rect.width };
+  }));
+
+  for (const button of buttons) {
+    expect(button.width).toBeLessThanOrEqual(26);
+    expect(button.left).toBeGreaterThanOrEqual(rail.left - 1);
+    expect(button.right).toBeLessThanOrEqual(rail.right + 1);
+  }
+});
+
+test('named soft keys support back one step, exit all, and recent apps hold gesture', async ({ page }) => {
+  await page.goto(appUrl);
+
+  await expect(page.locator('[data-testid="left-top-name"]')).toHaveText('ซ้ายบน');
+  await expect(page.locator('[data-testid="right-top-name"]')).toHaveText('ขวาบน');
+  await expect(page.locator('[data-testid="left-bottom-name"]')).toHaveText('ซ้ายล่าง');
+  await expect(page.locator('[data-testid="right-bottom-name"]')).toHaveText('ขวาล่าง');
+
+  await page.locator('[data-testid="nav-ok"]').click();
+  await page.locator('[data-testid="nav-right"]').click();
+  await page.locator('[data-testid="nav-ok"]').click();
+  const activeTitle = page.locator('.screen-view.active [data-testid="screen-title"]');
+  await expect(activeTitle).toHaveText(/Gallery/);
+
+  await page.locator('[data-testid="right-soft"]').click();
+  await expect(activeTitle).toHaveText(/Menu/);
+
+  await page.evaluate(() => window.openAppForTest('music'));
+  await page.evaluate(() => window.openAppForTest('settings'));
+  await page.locator('[data-testid="right-soft"]').dispatchEvent('pointerdown');
+  await page.waitForTimeout(700);
+  await page.locator('[data-testid="right-soft"]').dispatchEvent('pointerup');
+  await expect(activeTitle).toHaveText(/Recent Apps/);
+  await expect(page.locator('[data-testid="recent-list"]')).toContainText('Music');
+  await expect(page.locator('[data-testid="recent-list"]')).toContainText('Settings');
+
+  await page.locator('[data-testid="nav-up"]').click();
+  await expect(page.locator('[data-testid="recent-list"]')).not.toContainText('Settings');
+  await page.locator('[data-testid="nav-down"]').click();
+  await expect(page.locator('[data-testid="recent-list"]')).toContainText('No recent apps');
+
+  await page.evaluate(() => window.openAppForTest('gallery'));
+  await page.locator('[data-testid="right-bottom"]').click();
+  await expect(page.locator('#home-view')).toHaveClass(/active/);
+});
+
+test('status bar uses phone-style icons for 5G signal, wifi, and battery', async ({ page }) => {
+  await page.goto(appUrl);
+
+  await expect(page.locator('[data-testid="network-5g"]')).toHaveText('5G');
+  await expect(page.locator('[data-testid="signal-icon"] i')).toHaveCount(5);
+  await expect(page.locator('[data-testid="wifi-icon"] .wifi-arc')).toHaveCount(3);
+  await expect(page.locator('[data-testid="battery-icon"] .battery-fill')).toHaveCount(1);
+});
+
+test('playing music remains visible on the home screen as now playing context', async ({ page }) => {
+  await page.goto(appUrl);
+
+  await page.evaluate(() => window.openAppForTest('music'));
+  await page.getByRole('button', { name: /^Risque/ }).click();
+  await page.locator('[data-testid="right-bottom"]').click();
+
+  await expect(page.locator('[data-testid="now-playing"]')).toContainText('Risque');
+});
+
 test('computer keyboard behaves like the physical phone keypad', async ({ page }) => {
   await page.goto(appUrl);
 

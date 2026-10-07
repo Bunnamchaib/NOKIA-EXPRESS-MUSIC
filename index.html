@@ -89,11 +89,18 @@
 
         .music-stack {
             position: absolute;
-            left: 9px;
+            left: 1px;
             top: 118px;
             display: grid;
-            gap: 13px;
+            gap: 11px;
             z-index: 3;
+        }
+
+        .music-stack .side-key {
+            width: 23px;
+            height: 56px;
+            border-radius: 10px;
+            font-size: 18px;
         }
 
         .volume-stack {
@@ -251,6 +258,84 @@
             color: #d8f5ff;
         }
 
+        .network-pill {
+            font-weight: 800;
+            font-size: 8px;
+            color: #eaf9ff;
+        }
+
+        .signal-icon {
+            height: 10px;
+            display: inline-flex;
+            align-items: flex-end;
+            gap: 1px;
+        }
+
+        .signal-icon i {
+            width: 2px;
+            background: #eaf9ff;
+            border-radius: 1px;
+            box-shadow: 0 0 4px rgba(161, 232, 255, 0.55);
+        }
+
+        .signal-icon i:nth-child(1) { height: 3px; }
+        .signal-icon i:nth-child(2) { height: 5px; }
+        .signal-icon i:nth-child(3) { height: 7px; }
+        .signal-icon i:nth-child(4) { height: 9px; }
+        .signal-icon i:nth-child(5) { height: 10px; }
+
+        .wifi-icon {
+            position: relative;
+            width: 14px;
+            height: 10px;
+            display: inline-block;
+        }
+
+        .wifi-arc {
+            position: absolute;
+            left: 50%;
+            bottom: 0;
+            border: 1px solid #eaf9ff;
+            border-top: 0;
+            border-left-color: transparent;
+            border-right-color: transparent;
+            border-radius: 0 0 999px 999px;
+            transform: translateX(-50%);
+        }
+
+        .wifi-arc:nth-child(1) { width: 5px; height: 3px; }
+        .wifi-arc:nth-child(2) { width: 9px; height: 6px; }
+        .wifi-arc:nth-child(3) { width: 13px; height: 9px; }
+
+        .battery-icon {
+            width: 17px;
+            height: 8px;
+            border: 1px solid #eaf9ff;
+            border-radius: 2px;
+            position: relative;
+            display: inline-flex;
+            padding: 1px;
+        }
+
+        .battery-icon::after {
+            content: "";
+            position: absolute;
+            right: -3px;
+            top: 2px;
+            width: 2px;
+            height: 3px;
+            border-radius: 0 1px 1px 0;
+            background: #eaf9ff;
+        }
+
+        .battery-fill {
+            display: block;
+            width: 72%;
+            height: 100%;
+            border-radius: 1px;
+            background: linear-gradient(90deg, #61ff91, #d8ffea);
+        }
+
         .album-card {
             flex: 0 0 auto;
             aspect-ratio: 1 / 1;
@@ -276,6 +361,12 @@
         .track-artist {
             margin-top: 2px;
             font-size: 16px;
+        }
+
+        .now-playing {
+            margin-top: 5px;
+            color: #dff5ff;
+            font-size: 11px;
         }
 
         .dial-view,
@@ -326,6 +417,12 @@
             justify-content: center;
             gap: 12px;
             text-align: center;
+        }
+
+        .recent-card {
+            display: grid;
+            gap: 7px;
+            margin-top: 12px;
         }
 
         .call-orb {
@@ -409,6 +506,15 @@
             outline: 2px solid #7ed3ff;
         }
 
+        .settings-section {
+            margin-top: 7px;
+            padding: 7px 8px;
+            border-radius: 7px;
+            background: linear-gradient(#28313a, #101419);
+            font-size: 11px;
+            line-height: 1.35;
+        }
+
         .tiny-copy {
             margin-top: 8px;
             color: #b7c1c8;
@@ -484,7 +590,7 @@
         }
 
         .soft-row {
-            height: 55px;
+            height: 60px;
             display: grid;
             grid-template-columns: 1fr 74px 1fr;
             align-items: center;
@@ -495,7 +601,21 @@
             box-shadow: inset 0 1px rgba(255, 255, 255, 0.16);
         }
 
+        .soft-slot {
+            display: grid;
+            gap: 3px;
+            justify-items: center;
+            min-width: 0;
+        }
+
+        .soft-name {
+            font-size: 9px;
+            color: #b7c1c8;
+            text-shadow: 0 1px 2px #000;
+        }
+
         .soft-key {
+            width: min(84px, 100%);
             height: 12px;
             border: 0;
             border-radius: 999px;
@@ -653,7 +773,12 @@
                 <div class="screen" aria-live="polite">
                     <div class="status-bar">
                         <span id="status-date">07 Oct</span>
-                        <span class="status-center"><span class="bars" id="status-signal">||||</span><span id="status-wifi">WiFi|||</span><span id="status-battery">Batt||||</span></span>
+                        <span class="status-center">
+                            <span class="network-pill" data-testid="network-5g">5G</span>
+                            <span class="signal-icon" data-testid="signal-icon" aria-label="signal 5 bars"><i></i><i></i><i></i><i></i><i></i></span>
+                            <span class="wifi-icon" data-testid="wifi-icon" aria-label="wifi 3 bars"><span class="wifi-arc"></span><span class="wifi-arc"></span><span class="wifi-arc"></span></span>
+                            <span class="battery-icon" data-testid="battery-icon" aria-label="battery"><span class="battery-fill"></span></span>
+                        </span>
                         <span class="status-right" id="status-time">00:00</span>
                     </div>
                     <section id="home-view" class="screen-view home-view active">
@@ -661,6 +786,7 @@
                         <div class="track-info">
                             <div class="track-title">Risque</div>
                             <div class="track-artist">Cute Is What We Aim For</div>
+                            <div class="now-playing" data-testid="now-playing">Now playing: -</div>
                             <div class="tiny-copy">Volume <span data-testid="volume-level">5</span>/10</div>
                         </div>
                     </section>
@@ -728,7 +854,7 @@
                     <section id="music-view" class="screen-view app-view">
                         <div class="screen-title" data-testid="screen-title">Music</div>
                         <div class="list">
-                            <button class="list-row selected" type="button">Risque</button>
+                            <button class="list-row selected" type="button" onclick="playTrack('Risque', 'Cute Is What We Aim For')">Risque</button>
                             <button class="list-row" type="button">Choose local music folder - coming next</button>
                         </div>
                     </section>
@@ -752,13 +878,19 @@
                         <div class="screen-title" data-testid="screen-title">Settings</div>
                         <div class="list">
                             <button class="list-row selected" data-testid="button-settings" type="button">Hardware buttons: left soft single=Menu, right soft single=Back/custom app, D-pad single=app shortcuts, double=alternate app, hold=power or custom action</button>
-                            <button class="list-row" type="button">Sound: ringtone Nokia Tune, volume <span data-testid="settings-volume">5</span></button>
-                            <button class="list-row" type="button">Display: wallpaper/gallery, brightness 80%</button>
-                            <button class="list-row" type="button">Date & Time: auto</button>
-                            <button class="list-row" type="button">Phone/Profile: General</button>
-                            <button class="list-row" type="button">Network: signal 4, Wi-Fi 3, battery 4</button>
-                            <button class="list-row" type="button">Music folder: choose from computer later</button>
+                            <div class="settings-section">Buttons & shortcuts<br>Left top: Menu. Right top: Back one step. Right top hold: Recent Apps. Left/right/up/down: assign app, double press, and hold action.</div>
+                            <div class="settings-section">Sound & ringtone<br>Ringtone: Nokia Tune. Volume <span data-testid="settings-volume">5</span>. Profile: General / Silent / Outdoor.</div>
+                            <div class="settings-section">Display<br>Wallpaper from Gallery, brightness 80%, theme, status indicators.</div>
+                            <div class="settings-section">Date & time<br>Auto clock, date format, alarm defaults.</div>
+                            <div class="settings-section">Network & power<br>5G label, signal bars, Wi-Fi bars, battery bars, power button behavior.</div>
+                            <div class="settings-section">Media<br>Music folder chooser placeholder, gallery wallpaper, now playing on home.</div>
                         </div>
+                    </section>
+
+                    <section id="recent-view" class="screen-view app-view">
+                        <div class="screen-title" data-testid="screen-title">Recent Apps</div>
+                        <div id="recent-list" class="recent-card" data-testid="recent-list"></div>
+                        <div class="tiny-copy">Left/right: choose. Up: close selected. Down: clear all.</div>
                     </section>
 
                     <section id="camera-view" class="screen-view camera-view">
@@ -774,9 +906,17 @@
 
         <section class="control-face" aria-label="Hardware controls">
             <div class="soft-row">
-                <button class="soft-key" type="button" onclick="showMode('menu')" aria-label="left soft key menu"></button>
+                <div class="soft-slot">
+                    <span class="soft-name" data-testid="left-top-name">ซ้ายบน</span>
+                    <button class="soft-key" data-testid="left-soft" type="button" onclick="showMode('menu')" aria-label="left soft key menu"></button>
+                    <span class="soft-name" data-testid="left-bottom-name">ซ้ายล่าง</span>
+                </div>
                 <span></span>
-                <button class="soft-key" type="button" onclick="backHome()" aria-label="right soft key back"></button>
+                <div class="soft-slot">
+                    <span class="soft-name" data-testid="right-top-name">ขวาบน</span>
+                    <button class="soft-key" data-testid="right-soft" type="button" onpointerdown="startRightSoftHold()" onpointerup="finishRightSoftHold()" onpointerleave="cancelRightSoftHold()" onclick="rightSoftClick()" aria-label="right soft key back"></button>
+                    <span class="soft-name" data-testid="right-bottom-name">ขวาล่าง</span>
+                </div>
             </div>
 
             <div class="nav-row">
@@ -788,7 +928,7 @@
                     <button class="nav-btn nav-right" data-testid="nav-right" type="button" onclick="navMove('right')" aria-label="right">&#9654;</button>
                     <button class="nav-ok" data-testid="nav-ok" type="button" onclick="navSelect()" aria-label="center ok"></button>
                 </div>
-                <button class="call-key red" type="button" onclick="endCall()" aria-label="end call"></button>
+                <button class="call-key red" data-testid="right-bottom" type="button" onclick="exitAll()" aria-label="end call"></button>
             </div>
         </section>
 
@@ -810,6 +950,18 @@
 
     <script>
         const APPS = ["callHistory", "gallery", "contacts", "messages", "music", "camera", "calculator", "alarm", "settings"];
+        const APP_LABELS = {
+            callHistory: "Call Log",
+            gallery: "Gallery",
+            contacts: "Contacts",
+            messages: "Messages",
+            music: "Music",
+            camera: "Camera",
+            calculator: "Calculator",
+            alarm: "Alarm",
+            settings: "Settings",
+            menu: "Menu"
+        };
         const STORAGE = {
             callHistory: "nokia.callHistory",
             wallpaper: "nokia.wallpaper",
@@ -840,6 +992,12 @@
             mode: "home",
             dialNumber: "",
             menuIndex: 0,
+            historyStack: [],
+            recentApps: [],
+            recentIndex: 0,
+            rightHoldTimer: null,
+            suppressRightClick: false,
+            nowPlaying: null,
             stream: null,
             powered: true,
             settings: loadJson(STORAGE.settings, defaultSettings),
@@ -858,6 +1016,8 @@
         const volumeLevel = document.querySelector("[data-testid='volume-level']");
         const settingsVolume = document.querySelector("[data-testid='settings-volume']");
         const callHistoryList = document.getElementById("call-history-list");
+        const recentList = document.getElementById("recent-list");
+        const nowPlaying = document.querySelector("[data-testid='now-playing']");
 
         function loadJson(key, fallback) {
             try {
@@ -882,16 +1042,15 @@
             settingsVolume.textContent = state.settings.volume;
             renderMenuSelection();
             renderCallHistory();
+            renderRecentApps();
             renderStatusBar();
+            nowPlaying.textContent = state.nowPlaying ? `Now playing: ${state.nowPlaying.title}` : "Now playing: -";
         }
 
         function renderStatusBar() {
             const now = new Date();
             document.getElementById("status-date").textContent = now.toLocaleDateString("en-GB", { day: "2-digit", month: "short" });
             document.getElementById("status-time").textContent = now.toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" });
-            document.getElementById("status-signal").textContent = "|".repeat(state.settings.signal);
-            document.getElementById("status-wifi").textContent = "WiFi" + "|".repeat(state.settings.wifi);
-            document.getElementById("status-battery").textContent = "Batt" + "|".repeat(state.settings.battery);
         }
 
         function renderMenuSelection() {
@@ -911,10 +1070,31 @@
             )).join("");
         }
 
-        function showMode(mode) {
+        function renderRecentApps() {
+            if (!recentList) return;
+            if (!state.recentApps.length) {
+                recentList.innerHTML = '<div class="list-row selected">No recent apps</div>';
+                return;
+            }
+            state.recentIndex = Math.min(state.recentIndex, state.recentApps.length - 1);
+            recentList.innerHTML = state.recentApps.map((app, index) => (
+                `<button class="list-row ${index === state.recentIndex ? "selected" : ""}" type="button">${APP_LABELS[app] || app}</button>`
+            )).join("");
+        }
+
+        function rememberRecent(mode) {
+            if (!APPS.includes(mode)) return;
+            state.recentApps = [mode, ...state.recentApps.filter((app) => app !== mode)].slice(0, 6);
+            state.recentIndex = 0;
+        }
+
+        function showMode(mode, options = {}) {
             if (!state.powered && mode !== "home") return;
             stopCamera();
+            const push = options.push !== false && state.mode !== mode && state.mode !== "recent";
+            if (push) state.historyStack.push(state.mode);
             state.mode = mode;
+            if (options.recent !== false) rememberRecent(mode);
             render();
             pulse(mode.charAt(0).toUpperCase() + mode.slice(1));
         }
@@ -930,6 +1110,11 @@
         window.openAppForTest = openApp;
 
         function navSelect() {
+            if (state.mode === "recent") {
+                const app = state.recentApps[state.recentIndex];
+                if (app) openApp(app);
+                return;
+            }
             if (state.mode === "menu") {
                 openApp(APPS[state.menuIndex]);
                 return;
@@ -938,6 +1123,21 @@
         }
 
         function navMove(direction) {
+            if (state.mode === "recent") {
+                if (direction === "left") state.recentIndex = Math.max(0, state.recentIndex - 1);
+                if (direction === "right") state.recentIndex = Math.min(state.recentApps.length - 1, state.recentIndex + 1);
+                if (direction === "up" && state.recentApps.length) {
+                    state.recentApps.splice(state.recentIndex, 1);
+                    state.recentIndex = Math.max(0, state.recentIndex - 1);
+                }
+                if (direction === "down") {
+                    state.recentApps = [];
+                    state.recentIndex = 0;
+                }
+                renderRecentApps();
+                return;
+            }
+
             if (state.mode !== "menu") {
                 const shortcutMap = {
                     up: state.settings.shortcuts.navUp,
@@ -984,9 +1184,14 @@
         }
 
         function endCall() {
+            exitAll();
+        }
+
+        function exitAll() {
             stopCamera();
             state.mode = "home";
             state.dialNumber = "";
+            state.historyStack = [];
             render();
             pulse("Back to home");
         }
@@ -996,6 +1201,39 @@
             state.mode = "home";
             render();
             pulse("Back");
+        }
+
+        function backOneStep() {
+            stopCamera();
+            const previous = state.historyStack.pop() || "home";
+            state.mode = previous;
+            render();
+            pulse("Back");
+        }
+
+        function startRightSoftHold() {
+            state.suppressRightClick = false;
+            clearTimeout(state.rightHoldTimer);
+            state.rightHoldTimer = setTimeout(() => {
+                state.suppressRightClick = true;
+                showMode("recent", { recent: false });
+            }, 550);
+        }
+
+        function finishRightSoftHold() {
+            clearTimeout(state.rightHoldTimer);
+        }
+
+        function cancelRightSoftHold() {
+            clearTimeout(state.rightHoldTimer);
+        }
+
+        function rightSoftClick() {
+            if (state.suppressRightClick) {
+                state.suppressRightClick = false;
+                return;
+            }
+            backOneStep();
         }
 
         function pressKey(name) {
@@ -1016,7 +1254,15 @@
             pulse("Wallpaper set");
         }
 
+        function playTrack(title, artist) {
+            state.nowPlaying = { title, artist };
+            showMode("home", { recent: false });
+            pulse("Playing " + title);
+        }
+
         async function openCamera() {
+            if (state.mode !== "camera" && state.mode !== "recent") state.historyStack.push(state.mode);
+            rememberRecent("camera");
             state.mode = "camera";
             render();
             cameraStatus.style.display = "grid";
