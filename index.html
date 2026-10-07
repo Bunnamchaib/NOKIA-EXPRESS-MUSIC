@@ -686,8 +686,21 @@
 
         .menu-icon {
             display: block;
-            font-size: 20px;
+            width: 22px;
+            height: 22px;
             margin-bottom: 2px;
+        }
+
+        .menu-icon svg {
+            width: 22px;
+            height: 22px;
+            display: block;
+            fill: none;
+            stroke: #fff;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.72));
         }
 
         .camera-view {
@@ -1001,6 +1014,13 @@
             font-size: 15px;
         }
 
+        .music-controls {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 7px;
+            margin: 10px 0;
+        }
+
         .music-import {
             position: relative;
             overflow: hidden;
@@ -1070,6 +1090,15 @@
             width: 14px;
             height: 14px;
             fill: currentColor;
+        }
+
+        .music-play .pause-icon,
+        .music-play.is-playing .play-icon {
+            display: none;
+        }
+
+        .music-play.is-playing .pause-icon {
+            display: block;
         }
 
         .camera-topbar {
@@ -1660,15 +1689,15 @@
                     <section id="menu-view" class="screen-view menu-view">
                         <div class="screen-title" data-testid="screen-title">Menu</div>
                         <div class="menu-grid" aria-label="Nokia style menu">
-                            <button class="menu-item" type="button" data-app="callHistory"><span><span class="menu-icon">&#9742;</span>Call Log</span></button>
-                            <button class="menu-item" type="button" data-app="gallery"><span><span class="menu-icon">&#9638;</span>Gallery</span></button>
-                            <button class="menu-item" type="button" data-app="contacts"><span><span class="menu-icon">&#9786;</span>Contacts</span></button>
-                            <button class="menu-item" type="button" data-app="messages"><span><span class="menu-icon">&#9993;</span>Messages</span></button>
-                            <button class="menu-item" type="button" data-app="music"><span><span class="menu-icon">&#9835;</span>Music</span></button>
-                            <button class="menu-item" type="button" data-app="camera"><span><span class="menu-icon">&#9635;</span>Camera</span></button>
-                            <button class="menu-item" type="button" data-app="calculator"><span><span class="menu-icon">=</span>Calc</span></button>
-                            <button class="menu-item" type="button" data-app="alarm"><span><span class="menu-icon">&#9719;</span>Alarm</span></button>
-                            <button class="menu-item" type="button" data-app="settings"><span><span class="menu-icon">&#9881;</span>Settings</span></button>
+                            <button class="menu-item" type="button" data-app="callHistory"><span><span class="menu-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4h4l2 5-2 1c1 2 2 3 4 4l1-2 5 2v4c0 1-1 2-2 2C11 20 4 13 4 6c0-1 1-2 3-2Z"></path></svg></span>Call Log</span></button>
+                            <button class="menu-item" type="button" data-app="gallery"><span><span class="menu-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="14" rx="2"></rect><path d="m7 16 3-4 3 3 2-2 3 3"></path><circle cx="9" cy="9" r="1.2"></circle></svg></span>Gallery</span></button>
+                            <button class="menu-item" type="button" data-app="contacts"><span><span class="menu-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="3"></circle><path d="M5 20c1-4 13-4 14 0"></path></svg></span>Contacts</span></button>
+                            <button class="menu-item" type="button" data-app="messages"><span><span class="menu-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16v10H8l-4 4V6Z"></path><path d="M8 10h8M8 13h5"></path></svg></span>Messages</span></button>
+                            <button class="menu-item" type="button" data-app="music"><span><span class="menu-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18V5l10-2v13"></path><circle cx="7" cy="18" r="2"></circle><circle cx="17" cy="16" r="2"></circle></svg></span>Music</span></button>
+                            <button class="menu-item" type="button" data-app="camera"><span><span class="menu-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h4l2-2h4l2 2h4v10H4z"></path><circle cx="12" cy="13" r="3"></circle></svg></span>Camera</span></button>
+                            <button class="menu-item" type="button" data-app="calculator"><span><span class="menu-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="3" width="14" height="18" rx="2"></rect><path d="M8 7h8M8 12h2M12 12h2M16 12h.01M8 16h2M12 16h2M16 16h.01"></path></svg></span>Calc</span></button>
+                            <button class="menu-item" type="button" data-app="alarm"><span><span class="menu-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="13" r="7"></circle><path d="M12 9v4l3 2M5 4 3 6M19 4l2 2"></path></svg></span>Alarm</span></button>
+                            <button class="menu-item" type="button" data-app="settings"><span><span class="menu-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 13c.1-.6.1-1.4 0-2l2-1.5-2-3.5-2.4 1a7 7 0 0 0-1.7-1L14.5 3h-5L9 6a7 7 0 0 0-1.7 1L5 6 3 9.5 5 11c-.1.6-.1 1.4 0 2l-2 1.5L5 18l2.3-1a7 7 0 0 0 1.7 1l.5 3h5l.4-3a7 7 0 0 0 1.7-1L19 18l2-3.5L19 13Z"></path><circle cx="12" cy="12" r="3"></circle></svg></span>Settings</span></button>
                         </div>
                         <div class="softbar"><span>Select</span><span>Back</span></div>
                     </section>
@@ -1728,14 +1757,20 @@
 
                     <section id="music-view" class="screen-view app-view music-view">
                         <div class="screen-title" data-testid="screen-title">Music</div>
+                        <div class="music-controls">
+                            <label class="music-import">
+                                Add songs
+                                <input id="music-add-input" data-testid="music-add-input" type="file" accept="audio/*" multiple onchange="importMusicFiles(event, 'append')">
+                            </label>
+                            <label class="music-import">
+                                New folder
+                                <input id="music-folder-input" data-testid="music-folder-input" type="file" accept="audio/*" multiple webkitdirectory onchange="importMusicFiles(event, 'replace')">
+                            </label>
+                        </div>
                         <div id="music-library" class="list" data-testid="music-library"></div>
                         <div id="music-empty" class="music-empty" data-testid="music-empty">
                             <strong>No music</strong>
-                            <span>Import songs from this device.</span>
-                            <label class="music-import">
-                                Import folder
-                                <input id="music-folder-input" data-testid="music-folder-input" type="file" accept="audio/*" multiple webkitdirectory onchange="importMusicFiles(event)">
-                            </label>
+                            <span>เลือกเพลงเพิ่ม หรือเลือกแฟ้มใหม่ได้</span>
                         </div>
                         <div class="music-player" data-testid="music-player">
                             <div class="music-art" aria-hidden="true"></div>
@@ -1845,7 +1880,7 @@
                         </div>
                     </div>
                     <div id="power-off-screen" class="power-off-screen" data-testid="power-off-screen"></div>
-                    <div id="feedback" class="feedback">Ready</div>
+                    <div id="feedback" class="feedback" data-testid="feedback">Ready</div>
                 </div>
             </div>
         </section>
@@ -2730,6 +2765,12 @@
                 state.suppressRightClick = false;
                 return;
             }
+            if (state.powerMenuOpen) {
+                state.powerMenuOpen = false;
+                renderPowerState();
+                pulse("Cancelled");
+                return;
+            }
             if (state.mode === "dial") {
                 deleteDialCharacter();
                 return;
@@ -2782,11 +2823,11 @@
             pulse("Volume " + state.settings.volume);
         }
 
-        function setWallpaper(path) {
+        function setWallpaper(path, options = {}) {
             localStorage.setItem(STORAGE.wallpaper, path);
             document.querySelector(".home-view").style.backgroundImage =
                 `linear-gradient(to bottom, rgba(0,0,0,.08), rgba(0,0,0,.88) 72%), url("${path}")`;
-            pulse("Wallpaper set");
+            if (!options.silent) pulse("Wallpaper set");
         }
 
         function playTrack(title, artist) {
@@ -2893,28 +2934,31 @@
             navigator.mediaSession.setActionHandler("nexttrack", nextTrack);
         }
 
-        function importMusicFiles(event) {
+        function importMusicFiles(event, mode = "replace") {
             const files = Array.from(event.target.files || []).filter((file) => file.type.startsWith("audio/"));
             if (!files.length) {
                 pulse("No audio files");
                 return;
             }
 
-            state.musicTracks.forEach((track) => {
+            const replacing = mode !== "append";
+            if (replacing) state.musicTracks.forEach((track) => {
                 if (track.url) URL.revokeObjectURL(track.url);
             });
 
-            state.musicTracks = files.map((file) => ({
+            const importedTracks = files.map((file) => ({
                 title: file.name.replace(/\.[^.]+$/, ""),
                 artist: file.webkitRelativePath ? file.webkitRelativePath.split("/").slice(0, -1).join("/") : "Local file",
                 url: URL.createObjectURL(file)
             }));
-            state.activeTrackIndex = 0;
+            state.musicTracks = replacing ? importedTracks : [...state.musicTracks, ...importedTracks];
+            state.activeTrackIndex = state.musicTracks.length ? Math.max(0, state.activeTrackIndex) : -1;
             state.musicPlaying = false;
             state.nowPlaying = null;
             saveJson(STORAGE.musicTracks, state.musicTracks.map(({ title, artist }) => ({ title, artist })));
+            event.target.value = "";
             render();
-            pulse(`${state.musicTracks.length} songs imported`);
+            pulse(replacing ? `${state.musicTracks.length} songs loaded` : `${importedTracks.length} songs added`);
         }
 
         async function importGalleryImages(event) {
@@ -3162,7 +3206,16 @@
             }
             if (navigator.share) {
                 try {
-                    await navigator.share({ title: image.name, text: `${image.name} from Nokia Gallery`, url: location.href });
+                    const file = await makeShareFile(image);
+                    if (file && navigator.canShare && navigator.canShare({ files: [file] })) {
+                        await navigator.share({
+                            title: image.name,
+                            text: `${image.name} from Nokia Gallery`,
+                            files: [file]
+                        });
+                    } else {
+                        await navigator.share({ title: image.name, text: `${image.name} from Nokia Gallery`, url: location.href });
+                    }
                     pulse("Share opened");
                     return;
                 } catch {
@@ -3171,6 +3224,21 @@
                 }
             }
             downloadSelectedPhoto();
+        }
+
+        async function makeShareFile(image) {
+            if (image.type === "video") return null;
+            try {
+                const source = image.dataUrl || image.src;
+                const response = await fetch(source);
+                const blob = await response.blob();
+                const type = blob.type || "image/png";
+                const extension = type.includes("jpeg") ? "jpg" : "png";
+                const name = `${image.name.replace(/[^a-z0-9_-]+/gi, "-") || "nokia-photo"}.${extension}`;
+                return new File([blob], name, { type });
+            } catch {
+                return null;
+            }
         }
 
         function downloadSelectedPhoto() {
@@ -3338,7 +3406,7 @@
         });
 
         const savedWallpaper = localStorage.getItem(STORAGE.wallpaper);
-        if (savedWallpaper) setWallpaper(savedWallpaper);
+        if (savedWallpaper) setWallpaper(savedWallpaper, { silent: true });
         render();
         fitPhoneToViewport();
     </script>
