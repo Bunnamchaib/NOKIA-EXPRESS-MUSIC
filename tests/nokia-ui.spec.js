@@ -15,6 +15,14 @@ test('screen keeps a 3:4 Nokia QVGA aspect ratio', async ({ page }) => {
   expect(ratio).toBeCloseTo(0.75, 1);
 });
 
+test('phone stays away from the top edge on compact iPhone viewport', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 700 });
+  await page.goto(appUrl);
+
+  const box = await page.locator('.phone').boundingBox();
+  expect(box.y).toBeGreaterThanOrEqual(18);
+});
+
 test('pwa metadata uses express music with install icons and locked viewport', async ({ page }) => {
   await page.goto(appUrl);
 

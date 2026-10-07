@@ -1176,9 +1176,21 @@
         }
 
         @media (max-height: 820px) {
+            body {
+                padding-top: max(26px, env(safe-area-inset-top));
+                padding-bottom: max(14px, env(safe-area-inset-bottom));
+            }
+
             .phone {
-                transform: scale(var(--phone-scale, 0.92));
-                transform-origin: top center;
+                --phone-scale: 0.88;
+                transform: translateY(16px) scale(var(--phone-scale));
+                transform-origin: center center;
+            }
+        }
+
+        @media (max-height: 700px) {
+            .phone {
+                --phone-scale: 0.78;
             }
         }
     </style>
