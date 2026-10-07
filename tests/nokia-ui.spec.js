@@ -15,6 +15,51 @@ test('screen keeps a 3:4 Nokia QVGA aspect ratio', async ({ page }) => {
   expect(ratio).toBeCloseTo(0.75, 1);
 });
 
+test('pwa metadata uses express music with install icons and locked viewport', async ({ page }) => {
+  await page.goto(appUrl);
+
+  await expect(page).toHaveTitle('express music');
+  await expect(page.locator('link[rel="manifest"]')).toHaveAttribute('href', 'manifest.webmanifest');
+  await expect(page.locator('link[rel="apple-touch-icon"]')).toHaveAttribute('href', 'assets/apple-touch-icon.png');
+  await expect(page.locator('meta[name="apple-mobile-web-app-title"]')).toHaveAttribute('content', 'express music');
+  await expect(page.locator('meta[name="viewport"]')).toHaveAttribute('content', /user-scalable=no/);
+});
+
+test('phone fits inside an iPhone viewport without document scrolling', async ({ browser }) => {
+  const context = await browser.newContext({
+    viewport: { width: 390, height: 844 },
+    isMobile: true,
+    hasTouch: true,
+    userAgent: 'Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1'
+  });
+  const page = await context.newPage();
+  await page.goto(appUrl);
+
+  const metrics = await page.evaluate(() => {
+    const phone = document.querySelector('.phone').getBoundingClientRect();
+    return {
+      phoneTop: phone.top,
+      phoneBottom: phone.bottom,
+      phoneLeft: phone.left,
+      phoneRight: phone.right,
+      width: window.innerWidth,
+      height: window.innerHeight,
+      scrollWidth: document.documentElement.scrollWidth,
+      scrollHeight: document.documentElement.scrollHeight,
+      overflow: getComputedStyle(document.body).overflow
+    };
+  });
+
+  expect(metrics.phoneTop).toBeGreaterThanOrEqual(-1);
+  expect(metrics.phoneLeft).toBeGreaterThanOrEqual(-1);
+  expect(metrics.phoneRight).toBeLessThanOrEqual(metrics.width + 1);
+  expect(metrics.phoneBottom).toBeLessThanOrEqual(metrics.height + 1);
+  expect(metrics.scrollWidth).toBeLessThanOrEqual(metrics.width);
+  expect(metrics.scrollHeight).toBeLessThanOrEqual(metrics.height);
+  expect(metrics.overflow).toBe('hidden');
+  await context.close();
+});
+
 test('keypad input builds a real dial string in order', async ({ page }) => {
   await page.goto(appUrl);
 
