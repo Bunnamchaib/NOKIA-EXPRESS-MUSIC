@@ -99,15 +99,23 @@
         .volume-stack {
             position: absolute;
             right: 8px;
-            top: 154px;
+            top: 132px;
             display: grid;
-            gap: 12px;
+            gap: 9px;
             z-index: 3;
         }
 
         .volume-stack .side-key {
-            height: 58px;
-            font-size: 28px;
+            height: 52px;
+            font-size: 26px;
+        }
+
+        .camera-hardware svg {
+            width: 18px;
+            height: 18px;
+            display: block;
+            stroke: #fff;
+            filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.65));
         }
 
         .side-key {
@@ -623,6 +631,13 @@
         </div>
         <div class="volume-stack" aria-label="Volume side controls">
             <button class="side-key" data-testid="volume-up" type="button" onclick="changeVolume(1)" aria-label="volume up">+</button>
+            <button class="side-key camera-hardware" data-testid="camera-button" type="button" onclick="openCamera()" aria-label="camera">
+                <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M4 8h4l1.5-2h5L16 8h4v10H4z"></path>
+                    <circle cx="12" cy="13" r="3.2"></circle>
+                    <path d="M18 10h.01"></path>
+                </svg>
+            </button>
             <button class="side-key" data-testid="volume-down" type="button" onclick="changeVolume(-1)" aria-label="volume down">-</button>
         </div>
 
@@ -736,7 +751,7 @@
                     <section id="settings-view" class="screen-view app-view">
                         <div class="screen-title" data-testid="screen-title">Settings</div>
                         <div class="list">
-                            <button class="list-row selected" type="button">Shortcuts: left/menu, right/custom, D-pad custom</button>
+                            <button class="list-row selected" data-testid="button-settings" type="button">Hardware buttons: left soft single=Menu, right soft single=Back/custom app, D-pad single=app shortcuts, double=alternate app, hold=power or custom action</button>
                             <button class="list-row" type="button">Sound: ringtone Nokia Tune, volume <span data-testid="settings-volume">5</span></button>
                             <button class="list-row" type="button">Display: wallpaper/gallery, brightness 80%</button>
                             <button class="list-row" type="button">Date & Time: auto</button>

@@ -67,14 +67,30 @@ test('d-pad selection opens gallery and gallery can set the wallpaper', async ({
   await expect.poll(async () => page.evaluate(() => localStorage.getItem('nokia.wallpaper'))).toContain('9yb1x8i34faf1.jpg');
 });
 
-test('right side hardware is volume control instead of camera', async ({ page }) => {
+test('right side hardware has volume keys with a real svg camera button between them', async ({ page }) => {
   await page.goto(appUrl);
 
-  await expect(page.locator('[data-testid="camera-button"]')).toHaveCount(0);
+  const rightSideOrder = await page.locator('.volume-stack [data-testid]').evaluateAll((nodes) => nodes.map((node) => node.getAttribute('data-testid')));
+  expect(rightSideOrder).toEqual(['volume-up', 'camera-button', 'volume-down']);
+  await expect(page.locator('[data-testid="camera-button"] svg')).toHaveCount(1);
+
   await page.locator('[data-testid="volume-up"]').click();
   await expect(page.locator('[data-testid="volume-level"]')).toHaveText('6');
+  await page.locator('[data-testid="camera-button"]').click();
+  await expect(page.locator('.screen-view.active [data-testid="screen-title"]')).toHaveText(/Camera/);
+  await page.keyboard.press('Escape');
   await page.locator('[data-testid="volume-down"]').click();
   await expect(page.locator('[data-testid="volume-level"]')).toHaveText('5');
+});
+
+test('settings exposes configurable hardware button controls', async ({ page }) => {
+  await page.goto(appUrl);
+  await page.evaluate(() => window.openAppForTest('settings'));
+
+  await expect(page.locator('[data-testid="button-settings"]')).toContainText('Hardware buttons');
+  await expect(page.locator('[data-testid="button-settings"]')).toContainText('single');
+  await expect(page.locator('[data-testid="button-settings"]')).toContainText('double');
+  await expect(page.locator('[data-testid="button-settings"]')).toContainText('hold');
 });
 
 test('computer keyboard behaves like the physical phone keypad', async ({ page }) => {
