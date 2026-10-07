@@ -1,4 +1,4 @@
-const CACHE_NAME = "express-music-v4";
+const CACHE_NAME = "express-music-v5";
 const APP_SHELL = [
   "./",
   "./index.html",
