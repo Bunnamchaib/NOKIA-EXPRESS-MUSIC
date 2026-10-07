@@ -303,6 +303,25 @@ test('camera left soft key opens camera settings', async ({ page }) => {
   await expect(page.locator('.screen-view.active [data-testid="screen-title"]')).toHaveText(/Camera Settings/);
 });
 
+test('camera shutter stays fully visible inside the screen frame', async ({ page }) => {
+  await page.goto(appUrl);
+  await page.evaluate(() => window.openAppForTest('camera'));
+
+  const boxes = await page.evaluate(() => {
+    const screen = document.querySelector('.screen').getBoundingClientRect();
+    const shutter = document.querySelector('[data-testid="camera-shutter"]').getBoundingClientRect();
+    return {
+      screenTop: screen.top,
+      screenBottom: screen.bottom,
+      shutterTop: shutter.top,
+      shutterBottom: shutter.bottom
+    };
+  });
+
+  expect(boxes.shutterTop).toBeGreaterThan(boxes.screenTop + 20);
+  expect(boxes.shutterBottom).toBeLessThan(boxes.screenBottom - 8);
+});
+
 test('computer keyboard behaves like the physical phone keypad', async ({ page }) => {
   await page.goto(appUrl);
 

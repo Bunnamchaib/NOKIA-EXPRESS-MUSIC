@@ -839,16 +839,18 @@
 
         .camera-controls {
             position: absolute;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            z-index: 3;
+            left: 8px;
+            right: 8px;
+            bottom: 16px;
+            z-index: 6;
             display: grid;
             grid-template-columns: 46px 1fr 46px;
             align-items: center;
             gap: 12px;
-            padding: 12px 16px 14px;
-            background: linear-gradient(to top, rgba(0, 0, 0, 0.88), rgba(0, 0, 0, 0.2));
+            padding: 8px 10px;
+            border-radius: 999px;
+            background: rgba(0, 0, 0, 0.34);
+            backdrop-filter: blur(6px);
         }
 
         .camera-preview-thumb {
@@ -861,6 +863,8 @@
         }
 
         .camera-shutter {
+            position: relative;
+            z-index: 2;
             width: 58px;
             height: 58px;
             justify-self: center;
